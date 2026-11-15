@@ -1,7 +1,11 @@
 import { Button, DotWave, Logo, WordReveal, stagger } from '@/shared';
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { AboutSlides, FindCompanyForm } from '../components';
 import { SECURITY_FACTS } from '../constants';
+
+// Three.js is heavy and only the website's hero uses it, so it loads in its own chunk.
+const HeroScene = lazy(() => import('../components/HeroScene').then((m) => ({ default: m.HeroScene })));
 
 /** Public website on the platform's own address: the hero over a living dot grid, the pinned story of a meeting, how data is kept, and the two ways in. */
 export function LandingPage() {
@@ -46,7 +50,11 @@ export function LandingPage() {
                 </a>
               </div>
             </div>
-            <div aria-hidden="true" data-enter="fade" className="orb mx-auto w-full max-w-sm lg:max-w-none" />
+            <div data-enter="fade">
+              <Suspense fallback={<div aria-hidden="true" className="orb mx-auto aspect-square w-full max-w-md lg:max-w-none" />}>
+                <HeroScene />
+              </Suspense>
+            </div>
           </div>
         </section>
 
