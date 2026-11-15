@@ -1,0 +1,52 @@
+﻿[
+    {
+        "opt":  1,
+        "nav":  "nav-mega",
+        "footer":  "footer-columns",
+        "close":  "close-word",
+        "rhythm":  "dark-band",
+        "buttons":  "solid",
+        "mark":  "arc",
+        "moment":  "seed"
+    },
+    {
+        "opt":  2,
+        "nav":  "nav-mega",
+        "footer":  "footer-statement",
+        "close":  "close-word",
+        "rhythm":  "space",
+        "buttons":  "pill",
+        "mark":  "dots",
+        "moment":  "seed"
+    },
+    {
+        "opt":  3,
+        "nav":  "nav-mega",
+        "footer":  "footer-columns",
+        "close":  "close-word",
+        "rhythm":  "dark-band",
+        "buttons":  "tonal",
+        "mark":  "stack",
+        "moment":  "seed"
+    },
+    {
+        "opt":  4,
+        "nav":  "nav-cards",
+        "footer":  "footer-statement",
+        "close":  "close-type",
+        "rhythm":  "space",
+        "buttons":  "pill",
+        "mark":  "dots",
+        "moment":  "seed"
+    },
+    {
+        "opt":  5,
+        "nav":  "nav-centre",
+        "footer":  "footer-dark",
+        "close":  "close-type",
+        "rhythm":  "surface-pairs",
+        "buttons":  "solid",
+        "mark":  "wordmark",
+        "moment":  "seed"
+    }
+]

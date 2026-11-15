@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "frontend"],
       "port": 5173
+    },
+    {
+      "name": "website-options",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["docs/website-options/serve.mjs"],
+      "port": 5180
     }
   ]
 }

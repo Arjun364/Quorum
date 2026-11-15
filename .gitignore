@@ -18,3 +18,7 @@ test-results/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# landing-page option previews (generated)
+docs/website-options/shots/
+docs/website-options/.taste-skill/
