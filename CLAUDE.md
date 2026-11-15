@@ -47,7 +47,11 @@ TypeScript (backend and frontend):
 15. Transferring or removing a user requires reassigning their open points first.
 
 ## UI standards
-Before building any screen, use the installed design skills (Taste Skill, Web Design Guidelines, Awesome Design, Image to Code when mockups exist) and the tokens in `frontend/src/design/`. Check every screen with Playwright at phone and desktop widths. Read third-party skills before installing them.
+Installed project skills (in `.claude/skills/`): `design-taste-frontend` (Taste Skill), `web-design-guidelines` (Vercel), `playwright-cli`. Reference: `docs/design/REFERENCE-warm-editorial.md` (Awesome Design; structure only, never copy another brand's identity).
+- **Before building any screen:** follow `design-taste-frontend` for hierarchy, copy and finish, in its app/dashboard mode. It is written for marketing sites, so ignore its photo and hero-moment rules inside the app. Our tokens in `frontend/src/design/tokens.css` win over any palette it proposes.
+- **After building any screen:** run `web-design-guidelines` on the changed files and fix what it reports.
+- **Then verify in a real browser:** `playwright-cli` at phone (375 px) and desktop widths, light and dark, keyboard-only.
+- Read third-party skills before installing them. Playwright CLI output may contain credentials; it is gitignored under `.playwright-cli/`.
 
 ## Commands (adjust once the projects exist)
 - Local services: `docker compose up -d`

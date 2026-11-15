@@ -13,3 +13,8 @@ coverage/
 playwright-report/
 test-results/
 .DS_Store
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# TypeScript incremental build info
+*.tsbuildinfo
