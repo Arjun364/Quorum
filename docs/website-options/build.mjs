@@ -507,3 +507,91 @@ ${body(o, o.c, d)}
   writeFileSync(`option-${i}.html`, html, 'utf8');
   console.log(`option-${i}.html  hero=${o.hero} nav=${d.nav} footer=${d.footer} close=${d.close} rhythm=${d.rhythm} buttons=${d.buttons} mark=${d.mark}  (${html.length} bytes)`);
 });
+
+/* ------------------------------------------------------------------ option 6: the motion demo
+   dark page (option 1's palette and type), statement hero with the liquid-type pointer moment,
+   the big scene powers-of-ten-pullback under the app frame, line-carries-colour on the brand section. */
+{
+  const base = options[0];
+  const d = { ...deal[0], hero: 'split', rhythm: 'space' };
+  const c = base.c;
+  const facts = [['Present to start', '3 people'], ['Reminder', 'After 2 working days'], ['No-response flag', 'After 4 working days'], ['Disputed', 'After 3 comment rounds']];
+  const heroHtml = `<section class="hero hero--statement bg-horizon" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text hero__in">
+      <div data-moment="liquid-type" data-moment-opts='{"strength": 1.1, "radius": 0.34}'>
+        <a class="pill" href="#meeting"><span>Monthly department meetings</span><span class="muted">See the steps</span></a>
+        <h1 id="hero-h" class="mo-lt__type">${c.h1}</h1>
+        <p class="hero__lead">${c.lead}</p>
+        ${heroButtons}
+      </div>
+      <dl class="hero__facts">
+        ${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('\n        ')}
+      </dl>
+    </div></div>
+  </section>`;
+  const sceneHtml = `<section class="sc" data-big-scene="powers-of-ten-pullback" data-big-scene-opts='{"hold":1}' style="--h: 1" aria-labelledby="pb-h">
+    <div class="sc__stage">
+      <div class="pb__ground" aria-hidden="true"></div>
+      <div class="pb__copy">
+        <p class="t-label">The minutes</p>
+        <h2 id="pb-h">One screen holds the whole meeting</h2>
+        <p>The list of points fills the screen: each owner, each state, each due date. Owners open their own rows to confirm them or to write what is wrong.</p>
+        <div class="btn-row"><a class="btn btn--secondary" href="#meeting">See how a meeting runs</a></div>
+      </div>
+      <div class="pb__device"><div class="pb__screen">${windowFrag()}</div></div>
+    </div>
+  </section>`;
+  let page = body(base, c, d);
+  page = page.replace(/<section class="hero[\s\S]*?<\/section>/, heroHtml);
+  page = page.replace('<section class="section" id="meeting"', `${sceneHtml}\n\n  <section class="section" id="meeting"`);
+  page = page.replace('<section class="section" id="brand" style="--h:1"', `<section class="section ground-inverse" id="brand" style="--h:1" data-moment="line-carries-colour" data-moment-opts='{"from": "base"}'`);
+  const title = `${NAME}: meeting minutes for company departments`;
+  const desc = 'Department head starts the meeting, a random note-taker writes the points, each owner confirms their own, and open points carry over.';
+  const html = `<!doctype html>
+<html lang="en" data-type="software" data-radius="soft" data-ground="sky" data-buttons="${d.buttons}" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${title}</title>
+<meta name="description" content="${desc}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+${startTxt(1)}
+<link rel="stylesheet" href="assets/ui/base.css">
+<link rel="stylesheet" href="assets/ui/window/fragment.css">
+<link rel="stylesheet" href="assets/ui/chat/fragment.css">
+<link rel="stylesheet" href="assets/ui/checklist/fragment.css">
+<link rel="stylesheet" href="assets/ui/notify/fragment.css">
+<link rel="stylesheet" href="assets/ui/toggles/fragment.css">
+<link rel="stylesheet" href="assets/ui/doc/fragment.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('sc-js');setTimeout(()=>document.documentElement.classList.add('sc-safe'),2500)</script>
+<link rel="stylesheet" href="assets/scenes/scenes.css">
+<link rel="stylesheet" href="assets/scenes/powers-of-ten-pullback/scene.css">
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js"><link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/liquid-type/moment.js"><link rel="modulepreload" href="assets/moments/line-carries-colour/moment.js">
+<style>
+${appCss}
+</style>
+</head>
+<body>
+<!-- type: software · option 6 (motion demo)
+     deal: hero statement (the hero liquid-type lists), nav ${d.nav}, close ${d.close}, footer ${d.footer}, rhythm space, buttons ${d.buttons}, mark ${d.mark}, ground bg-horizon
+     beats: liquid-type (hero, pointer) · big scene powers-of-ten-pullback (under the app frame) · line-carries-colour (brand section) -->
+${page}
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script type="module" src="assets/scenes/scenes.js"></script>
+</body>
+</html>
+`;
+  writeFileSync('option-6.html', html, 'utf8');
+  console.log(`option-6.html  motion demo  (${html.length} bytes)`);
+}
