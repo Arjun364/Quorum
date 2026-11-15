@@ -8,23 +8,31 @@ A multi-tenant service where organizations run their monthly department meeting:
 It is **not a task manager.** Daily tasks are in Zoho Projects. Never add subtasks, hours, Kanban or anything that makes users enter the same thing twice. **There is no project list:** a project is a project tag typed on a point.
 
 ## Stack
-- Backend: Node.js, TypeScript, **NestJS**, **Prisma**, **PostgreSQL**. Auth: argon2/bcrypt, JWT access token (memory only in the browser) + hashed refresh token in an httpOnly cookie.
+- Backend: Node.js, TypeScript, **Express 5**, **Prisma**, **PostgreSQL**, zod validation. Auth: bcryptjs, JWT access token (memory only in the browser) + hashed refresh token in an httpOnly cookie.
 - Frontend: React, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS. Hosted on Vercel; `/api` proxied to the backend.
 - Local: Docker Compose with `postgres` and `mailpit`.
 - Tests: Vitest (unit, API), Playwright (browser).
 
 ## Architecture
-- `backend/src/modules/<feature>/`: thin `*.controller.ts`, `*.service.ts`, `dto/`. Controllers validate, authorize (guards), call a service, return a DTO. **No business rules in controllers.**
-- `backend/src/rules/`: pure, unit-tested `meeting-state-machine.ts`, `note-taker-selector.ts`, `confirmation-rules.ts`.
-- `backend/src/common/`: guards, error filter, tenant context.
+- Backend is layered under `backend/src/`: `config/ constants/ controllers/ helpers/ middlewares/ prisma/ repositories/ routes/ services/ types/ utils/ validators/`, plus `app.ts` (builds the Express app) and `server.ts` (starts it). Each folder has an `index.ts` barrel.
+  - **routes**: URL to middleware chain to controller; nothing else.
+  - **validators**: zod schemas for request bodies, applied with `validateBody` in the route.
+  - **controllers**: thin. Read the validated request, call ONE service, shape the response. **No business rules, no Prisma.**
+  - **services**: business rules and orchestration. They depend on repository *interfaces* (`types/repository.types.ts`), never on Prisma directly.
+  - **repositories**: the only code that talks to Prisma. Feature repositories use the tenant-scoped client (`createPrismaClients().tenant`); only login, refresh and bootstrap use the raw client.
+  - **middlewares**: authenticate (also sets the tenant context), validate, rate limits, error handling.
+  - **helpers**: small technical helpers (JWT, cookies, password hashing, email template). **utils**: pure functions (problem details, password policy, logger).
+  - Rules classes (`meeting-state-machine`, `note-taker-selector`, `confirmation-rules`) will live in `services/rules/`, pure and unit-tested first.
+  - Dependencies are wired once in `server.ts` (`createRepositories` then `createServices` then `createApp`); tests build the same pieces with in-memory fakes from `test/helpers/fakes.ts`.
 - Frontend: `frontend/src/features/<name>/{pages,components,hooks,types.ts}`, one API file per backend module in `src/api/`, design tokens in `src/design/`.
 - Full tree: spec section 8.
 
 ## Conventions
 TypeScript (backend and frontend):
 - Strict mode, **no `any`**. camelCase for variables/functions, PascalCase for types/classes/components, kebab-case file names, hooks start with `use`.
-- Classes end with `Controller`/`Service`/`Guard`; DTOs end with `Request`/`Response` and are validated (class-validator or zod).
-- `async`/`await` throughout. **Never return Prisma models from controllers**; map to DTOs.
+- File names: `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, `<name>.routes.ts`, `<name>.validator.ts`, `<name>.middleware.ts`. Request bodies are validated with zod schemas; response shapes are typed (`...Response`).
+- `async`/`await` throughout (Express 5 forwards rejected promises to the error handler, so no try/catch wrappers in controllers). **Never return Prisma models from controllers**; map them to response types.
+- Errors: throw `HttpError` helpers (`badRequest`, `unauthorized`, `forbidden`, ...); the error middleware turns everything into problem-details.
 - Prisma: a migration for every schema change; enums stored as strings; all times UTC; every table has `organizationId`.
 - Errors go through the global filter in a consistent problem-details shape. No magic strings; use enums and constants.
 - Server state with TanStack Query. The access token lives in memory only, never localStorage. The UI hides things but the **server enforces permissions**.
@@ -65,8 +73,8 @@ Installed project skills (in `.claude/skills/`): `design-taste-frontend` (Taste 
 
 ## Commands (adjust once the projects exist)
 - Local services: `docker compose up -d`
-- Backend: `cd backend && npm install && npm run start:dev`; tests `npm test`; build `npx nest build`; new migration `npm run prisma:migrate -- --name <name>` (loads `../.env`)
-- TypeScript is pinned to 6.x (Nest CLI needs it); Prisma is pinned to 6.x. Do not upgrade either without asking.
+- Backend: `cd backend && npm install && npm run start:dev` (tsx watch, loads `.env` from the backend folder or repo root); tests `npm test`; build `npm run build` then `npm start`; new migration `npm run prisma:migrate -- --name <name>` (loads `../.env` through `dotenv-cli`; always call that binary as `dotenv-cli`, because the `dotenv` package also installs a different `dotenv` command).
+- TypeScript is pinned to 6.x; Prisma is pinned to 6.x. Do not upgrade either without asking.
 - Frontend: `cd frontend && npm install && npm run dev`; checks `npm run lint && npm run build`
 - Browser tests: `npx playwright test`
 - Mail inbox in development: Mailpit web UI (port 8025).

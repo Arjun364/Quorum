@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyTenantScope, TenantContextMissingError } from '../src/common/tenant/tenant-scope';
+import { applyTenantScope, TenantContextMissingError } from '../src/prisma';
 
 describe('applyTenantScope', () => {
   it('forces organizationId into where for reads', () => {
@@ -37,12 +37,7 @@ describe('applyTenantScope', () => {
   });
 
   it('scopes both where and create on upsert', () => {
-    const out = applyTenantScope(
-      'Department',
-      'upsert',
-      { where: { id: 1 }, create: { name: 'N' }, update: {} },
-      7,
-    );
+    const out = applyTenantScope('Department', 'upsert', { where: { id: 1 }, create: { name: 'N' }, update: {} }, 7);
     expect(out.where).toEqual({ id: 1, organizationId: 7 });
     expect(out.create).toEqual({ name: 'N', organizationId: 7 });
   });

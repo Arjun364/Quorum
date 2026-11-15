@@ -1,4 +1,4 @@
-# Quorum
+﻿# Quorum
 
 A multi-tenant application for running monthly department meetings: the dept head starts the meeting, a randomly drawn note-taker compiles the minutes, each named owner confirms their own points, the dept head approves, and unfinished points carry over automatically.
 
@@ -43,7 +43,7 @@ On first start, if no users exist, the API creates one **Platform Owner** from `
 ## Checks
 
 ```bash
-cd backend  && npm test && npx nest build
+cd backend  && npm test && npm run build
 cd frontend && npm run lint && npm run build
 ```
 

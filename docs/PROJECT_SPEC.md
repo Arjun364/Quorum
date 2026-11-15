@@ -218,9 +218,9 @@ Confirming ─force-conclude─▶ Concluded
 
 ## 7. Technology
 
-- **Backend:** Node.js with TypeScript, **NestJS** (modules, controllers, services, guards), **Prisma** ORM, **PostgreSQL**.
-- **Auth:** email + password (argon2 or bcrypt), JWT access token (about 15 minutes) kept in memory in the browser, refresh token in an httpOnly cookie, hashed in the database, long-lived (about 30 days) so email links open straight into the app. Account lockout after repeated failures.
-- **Authorization:** NestJS guards with resource checks (section 10).
+- **Backend:** Node.js with TypeScript, **Express 5**, **Prisma** ORM, **PostgreSQL**, zod request validation, in the layered layout of section 8.
+- **Auth:** email + password (bcryptjs), JWT access token (about 15 minutes) kept in memory in the browser, refresh token in an httpOnly cookie, hashed in the database, long-lived (about 30 days) so email links open straight into the app. Account lockout after repeated failures.
+- **Authorization:** Express middleware plus resource checks in services (section 10).
 - **Email:** Nodemailer over SMTP; Mailpit in development.
 - **Scheduled work:** a daily job (reminders, NoResponse flags) exposed as a job that can run from a host cron or an authenticated scheduled endpoint. Must be safe to run twice (`ReminderLog` de-duplication).
 - **Frontend:** React, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS. Hosted on Vercel; `/api` is proxied to the backend so cookies stay same-origin.
@@ -239,28 +239,25 @@ quorum/
 ├── docker-compose.yml                 postgres, mailpit (+ api optional)
 ├── .env.example
 ├── docs/PROJECT_SPEC.md
-├── backend/                           NestJS API
-│   ├── package.json, tsconfig.json, nest-cli.json
-│   ├── prisma/ schema.prisma, migrations/, seed (bootstrap only)
+├── backend/                           Express API (layered)
+│   ├── package.json, tsconfig.json, prisma.config.ts
+│   ├── prisma/ schema/ (one .prisma file per model), migrations/ (committed)
 │   ├── src/
-│   │   ├── main.ts, app.module.ts
-│   │   ├── common/                    guards, decorators, filters (ProblemDetails-style errors), tenant context
-│   │   ├── rules/                     PURE, unit-tested:
-│   │   │   ├── meeting-state-machine.ts
-│   │   │   ├── note-taker-selector.ts
-│   │   │   └── confirmation-rules.ts
-│   │   ├── modules/                   each: *.controller.ts (thin), *.service.ts, dto/
-│   │   │   ├── auth/  organizations/  users/  departments/  join-links/
-│   │   │   ├── settings/  standing-points/  tags/
-│   │   │   ├── meetings/  meeting-draft/  confirmations/  head-review/
-│   │   │   ├── notifications/  email/  reminders/  dashboards/
-│   └── test/                          rules tests, API permission and isolation tests
+│   │   ├── app.ts, server.ts          build the Express app / start it
+│   │   ├── config/  constants/  helpers/  utils/  types/
+│   │   ├── prisma/                    client + central tenant filter
+│   │   ├── repositories/              the only code that talks to Prisma
+│   │   ├── services/                  business rules; services/rules/ holds the PURE, unit-tested rule classes:
+│   │   │                              meeting-state-machine.ts, note-taker-selector.ts, confirmation-rules.ts
+│   │   ├── controllers/               thin: call one service, shape the response
+│   │   ├── routes/  validators/  middlewares/
+│   └── test/                          rules tests, HTTP permission and isolation tests, helpers/fakes.ts
 └── frontend/
     ├── package.json, vite.config.ts, vercel.json
     └── src/ app/, api/, components/, design/ (tokens), features/<name>/{pages,components,hooks,types.ts}
 ```
 
-Controllers validate input (DTO), call a guard and a service, and return a DTO. **Business rules never live in controllers.**
+Routes apply validators and middlewares, controllers call one service and shape the response, services hold the rules, repositories talk to Prisma. **Business rules never live in controllers; Prisma is never used outside repositories.**
 
 ---
 
@@ -450,7 +447,7 @@ Daily tasks, subtasks, time tracking, Kanban, Zoho synchronization, replying to 
 - 2026-11-15: Meeting language is an organization setting (Malayalam); AI is Phase 2.
 - 2026-11-15: Excel import on hold; SMTP provider chosen at deployment; portfolio presentation after the product is done.
 - 2026-11-15 (M0): bcryptjs (pure JS, cost 12) is used for password hashing instead of argon2, to avoid native build problems on Windows. Password policy: 10 to 72 bytes, with upper, lower and digit.
-- 2026-11-15 (M0): TypeScript is pinned to 6.x in both projects because the Nest CLI needs the compiler API that TypeScript 7.0 does not ship yet. Revisit when 7.1 is out.
+- 2026-11-15 (M0): TypeScript is pinned to 6.x in both projects (TypeScript 7.0 does not yet ship the compiler API some tools need). Revisit when 7.1 is out.
 - 2026-11-15 (M0): Prisma 6 is used (Prisma 7/8 changes configuration and drivers); upgrade deliberately later. Prisma enums are used for roles and statuses.
 - 2026-11-15 (M0): Tenant isolation is enforced by a Prisma client extension (`PrismaService.tenant`) that forces `organizationId` into every query on tenant models and throws when no organization is in context. The raw client is used only for login, refresh and bootstrap.
 - 2026-11-15 (M0): The refresh cookie is scoped to `/api/auth`, SameSite=Lax, httpOnly. Refresh tokens rotate; reuse of a rotated token revokes every session of that user. After 5 failed logins an account is locked for 15 minutes.
@@ -458,4 +455,5 @@ Daily tasks, subtasks, time tracking, Kanban, Zoho synchronization, replying to 
 - 2026-11-15: The product is named **Quorum** (the minimum present to hold a valid meeting, matching the 3-person rule). Repository: github.com/Arjun364/Quorum.
 - 2026-11-15: Frontend is feature-based per `docs/FRONTEND_PATTERN.md` (features and a same-shaped `shared/` layer, page + orchestration hook pairs, barrels, `@/` alias). Section 8's frontend tree is superseded by that document.
 - 2026-11-15: Prisma schema is split into one file per model (`backend/prisma/schema/`), configured through `prisma.config.ts`; migrations stay in `backend/prisma/migrations/` and are committed. Rules are in CLAUDE.md.
-- Open: backend folder structure (layered Express-style layout requested) and whether to move from NestJS to Express; hosting choice for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).
+- 2026-11-15: The backend moved from NestJS to Express 5 in the team's layered layout (config, constants, controllers, helpers, middlewares, prisma, repositories, routes, services, types, utils, validators, app.ts, server.ts). The API contract did not change. Earlier log entries that mention NestJS are history.
+- Open: hosting choice for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).

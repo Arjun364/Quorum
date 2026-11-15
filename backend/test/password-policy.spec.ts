@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkPasswordPolicy } from '../src/modules/auth/password-policy';
+import { checkPasswordPolicy } from '../src/utils';
 
 describe('checkPasswordPolicy', () => {
   it('accepts a strong password', () => {
@@ -18,7 +18,7 @@ describe('checkPasswordPolicy', () => {
     expect(checkPasswordPolicy(pw).join(' ')).toContain(word);
   });
 
-  it('rejects passwords over bcrypt\'s 72-byte limit', () => {
+  it("rejects passwords over bcrypt's 72-byte limit", () => {
     expect(checkPasswordPolicy('Aa1' + 'x'.repeat(80))).not.toEqual([]);
   });
 });
