@@ -449,4 +449,10 @@ Daily tasks, subtasks, time tracking, Kanban, Zoho synchronization, replying to 
 - 2026-11-15: Head writes per-point change requests on Return and can dismiss a disputed employee comment (assumed; confirm).
 - 2026-11-15: Meeting language is an organization setting (Malayalam); AI is Phase 2.
 - 2026-11-15: Excel import on hold; SMTP provider chosen at deployment; portfolio presentation after the product is done.
+- 2026-11-15 (M0): bcryptjs (pure JS, cost 12) is used for password hashing instead of argon2, to avoid native build problems on Windows. Password policy: 10 to 72 bytes, with upper, lower and digit.
+- 2026-11-15 (M0): TypeScript is pinned to 6.x in both projects because the Nest CLI needs the compiler API that TypeScript 7.0 does not ship yet. Revisit when 7.1 is out.
+- 2026-11-15 (M0): Prisma 6 is used (Prisma 7/8 changes configuration and drivers); upgrade deliberately later. Prisma enums are used for roles and statuses.
+- 2026-11-15 (M0): Tenant isolation is enforced by a Prisma client extension (`PrismaService.tenant`) that forces `organizationId` into every query on tenant models and throws when no organization is in context. The raw client is used only for login, refresh and bootstrap.
+- 2026-11-15 (M0): The refresh cookie is scoped to `/api/auth`, SameSite=Lax, httpOnly. Refresh tokens rotate; reuse of a rotated token revokes every session of that user. After 5 failed logins an account is locked for 15 minutes.
+- 2026-11-15 (M0): The guard reloads the user from the database on every request, so deactivation and password-change requirements take effect immediately.
 - Open: hosting choice for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).

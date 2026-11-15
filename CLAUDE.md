@@ -51,7 +51,8 @@ Before building any screen, use the installed design skills (Taste Skill, Web De
 
 ## Commands (adjust once the projects exist)
 - Local services: `docker compose up -d`
-- Backend: `cd backend && npm install && npm run start:dev`; tests `npm test`; migration `npx prisma migrate dev --name <name>`
+- Backend: `cd backend && npm install && npm run start:dev`; tests `npm test`; build `npx nest build`; new migration `npm run prisma:migrate -- --name <name>` (loads `../.env`)
+- TypeScript is pinned to 6.x (Nest CLI needs it); Prisma is pinned to 6.x. Do not upgrade either without asking.
 - Frontend: `cd frontend && npm install && npm run dev`; checks `npm run lint && npm run build`
 - Browser tests: `npx playwright test`
 - Mail inbox in development: Mailpit web UI (port 8025).
