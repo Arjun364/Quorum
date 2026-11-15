@@ -1,0 +1,15 @@
+﻿node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+*.xlsx
+*.xls
+*.log
+.vscode/
+.idea/
+coverage/
+playwright-report/
+test-results/
+.DS_Store
