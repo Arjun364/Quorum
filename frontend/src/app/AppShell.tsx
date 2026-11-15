@@ -1,8 +1,8 @@
 import { ROLE_LABELS, useSession, useSignOut } from '@/features/auth';
 import { BrandMark, useCompanyPublic } from '@/features/company';
-import { DotWave, Icon, initialsOf } from '@/shared';
+import { Avatar, DotWave, Icon } from '@/shared';
 import type { IconName, SystemRole } from '@/shared';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 
 interface NavItem {
   to: string;
@@ -16,6 +16,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: 'home', roles: ['CompanyHead', 'DepartmentHead', 'Employee'], end: true },
   { to: '/organizations', label: 'Organizations', icon: 'building', roles: ['CompanyHead'] },
+  { to: '/people', label: 'People', icon: 'users', roles: ['DepartmentHead', 'Employee'] },
+  { to: '/transfers', label: 'Moves', icon: 'clock', roles: ['CompanyHead', 'DepartmentHead'] },
   { to: '/settings/brand', label: 'Brand', icon: 'palette', roles: ['CompanyHead'] },
 ];
 
@@ -61,13 +63,13 @@ export function AppShell() {
         </nav>
         <div className="mt-auto">
           <div className="card flex items-center gap-3 p-3">
-            <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">
-              {initialsOf(user?.name ?? '?')}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{user?.name}</p>
-              <p className="eyebrow truncate !text-[0.65rem]">{user ? ROLE_LABELS[user.systemRole] : ''}</p>
-            </div>
+            <Link to="/profile" aria-label="Your profile" data-cursor-label="Profile" className="flex min-w-0 flex-1 items-center gap-3">
+              <Avatar name={user?.name ?? '?'} url={user?.avatarUrl} className="size-9" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{user?.name}</span>
+                <span className="eyebrow block truncate !text-[0.65rem]">{user ? ROLE_LABELS[user.systemRole] : ''}</span>
+              </span>
+            </Link>
             <button
               type="button"
               onClick={() => void signOut()}
@@ -88,14 +90,19 @@ export function AppShell() {
               <BrandMark name={companyName} logoUrl={company?.logoUrl ?? null} />
               <span className="truncate font-display text-lg font-semibold tracking-tight">{companyName}</span>
             </div>
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              aria-label="Sign out"
-              className="press grid size-10 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
-            >
-              <Icon name="logout" />
-            </button>
+            <div className="flex items-center gap-1">
+              <Link to="/profile" aria-label="Your profile" className="press grid size-10 place-items-center">
+                <Avatar name={user?.name ?? '?'} url={user?.avatarUrl} className="size-8" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                aria-label="Sign out"
+                className="press grid size-10 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
+              >
+                <Icon name="logout" />
+              </button>
+            </div>
           </div>
           {items.length > 1 && (
             <nav aria-label="Main" className="flex gap-1 overflow-x-auto px-3 pb-2">

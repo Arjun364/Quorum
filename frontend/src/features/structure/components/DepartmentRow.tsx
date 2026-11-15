@@ -1,4 +1,5 @@
 import { Button, initialsOf } from '@/shared';
+import { Link } from 'react-router-dom';
 import type { DepartmentRowProps } from '../types';
 import { formatDate } from '../utils';
 
@@ -12,7 +13,7 @@ export function DepartmentRow({ department, isBusy, onInvite, onResend, onRevoke
           {initialsOf(department.name)}
         </span>
         <div className="min-w-0">
-          <p className="truncate font-medium">{department.name}</p>
+          <Link to={`/departments/${department.id}/people`} className="link-draw truncate font-medium" data-cursor-label="People">{department.name}</Link>
           <p className="text-sm text-muted">
             <span className="num">{department.code}</span> · {department.memberCount} {department.memberCount === 1 ? 'person' : 'people'}
           </p>

@@ -3,6 +3,8 @@ import { BrandSettingsPage, CheckEmailPage, StartPage } from '@/features/company
 import { HomePage } from '@/features/home';
 import { AcceptInvitationPage } from '@/features/invitations';
 import { LandingPage } from '@/features/landing';
+import { DepartmentPeoplePage, MyDepartmentRedirect, TransfersPage } from '@/features/people';
+import { ProfilePage } from '@/features/profile';
 import { OrganizationDetailPage, OrganizationsPage } from '@/features/structure';
 import { currentCompanySlug } from '@/config';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
@@ -32,6 +34,13 @@ const companyRoutes: RouteObject[] = [
         element: <AppShell />,
         children: [
           { path: '/', element: <HomePage /> },
+          { path: '/profile', element: <ProfilePage /> },
+          { path: '/people', element: <MyDepartmentRedirect /> },
+          { path: '/departments/:id/people', element: <DepartmentPeoplePage /> },
+          {
+            element: <RequireRole roles={['CompanyHead', 'DepartmentHead']} />,
+            children: [{ path: '/transfers', element: <TransfersPage /> }],
+          },
           {
             element: <RequireRole roles={['CompanyHead']} />,
             children: [

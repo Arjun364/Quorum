@@ -30,6 +30,8 @@ export interface SessionUser {
   companyId: number | null;
   departmentId: number | null;
   jobTitle: string | null;
+  phone: string | null;
+  avatarUrl: string | null;
   mustChangePassword: boolean;
 }
 

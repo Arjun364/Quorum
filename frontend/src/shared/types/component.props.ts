@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, Ref } from 'react';
+import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, Ref, SelectHTMLAttributes } from 'react';
 import type { PasswordRule } from './api.types';
 
 /** Props of the checklist of password requirements. */
@@ -28,7 +28,7 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
 /** Props of the shared password input (type and trailing toggle are managed internally). */
 export type PasswordFieldProps = Omit<TextFieldProps, 'type' | 'trailing'>;
 
-export type AlertTone = 'error' | 'info';
+export type AlertTone = 'error' | 'info' | 'success';
 
 /** Props of the shared inline message. */
 export interface AlertProps {
@@ -83,4 +83,19 @@ export interface WordRevealProps {
   onView?: boolean;
   /** Delay before the first word, in milliseconds. */
   delayMs?: number;
+}
+
+/** Props of a person's picture: their photo, or their initials on an accent tile. */
+export interface AvatarProps {
+  name: string;
+  url?: string | null;
+  className?: string;
+}
+
+/** Props of a labelled drop-down list. */
+export interface SelectFieldProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
+  label: string;
+  error?: string;
+  hint?: string;
+  children: ReactNode;
 }

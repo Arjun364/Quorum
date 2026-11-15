@@ -98,3 +98,9 @@ Begin with **M0 Foundation** (spec section 14): repo structure, Docker Compose, 
 - The company is resolved from the request's host (`parseCompanySlug`); the unknown subdomain is a 404 and the platform's own address means "no company". In development use `<slug>.localhost:5173`.
 - Brand: three presets plus a custom accent that must reach 3:1 contrast on the page background. Logos upload straight to Cloudinary with a server-signed request into `quorum/<slug>/logo`; the server accepts a saved image only if it sits in that folder. Never commit the Cloudinary keys (`CLOUDINARY_*` stay in `.env`).
 - Prisma quirk: a diff-generated migration can alter an enum on a table that is created later in the same file. Check generated SQL before applying, write migration files without a byte-order mark, and never run `prisma migrate reset` without the user's explicit consent.
+
+## People, transfers and profile (M1b)
+- Transfer approval rules are pure and unit-tested in `backend/src/services/rules/transfer-rules.ts`; `TransferService` only orchestrates them. Never complete a transfer outside that path.
+- Department heads reach only their own department's people, invitations and moves; the service checks it, not just the route. Another company's ids must look like "not found".
+- `OpenPointsCheck` is a placeholder until M2: when points exist, implement it and the "reassign first" rule starts applying to deactivation and transfers with no other change.
+- If `prisma migrate dev` asks to reset the database because an old migration's checksum differs, do not reset: generate the SQL with `prisma migrate diff --from-url ... --to-schema-datamodel prisma/schema --script`, save it without a BOM as a new migration folder, then run `npm run prisma:deploy`.

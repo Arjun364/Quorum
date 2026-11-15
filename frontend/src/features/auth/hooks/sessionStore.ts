@@ -1,5 +1,6 @@
 import { SESSION_RENEW_MARGIN_SECONDS, SESSION_RENEW_MIN_SECONDS } from '@/config';
 import { refreshSession, setAccessToken, setUnauthorizedHandler } from '@/shared';
+import type { SessionUser } from '@/shared';
 import type { AuthResponse, SessionState } from '../types';
 
 let state: SessionState = { status: 'loading', user: null };
@@ -40,6 +41,11 @@ export function initSession(): Promise<void> {
 /** Starts a session returned by login or change-password. */
 export function startSession(session: AuthResponse): void {
   apply(session);
+}
+
+/** Updates fields of the signed-in user in place (for example after they edit their profile). */
+export function patchSessionUser(patch: Partial<SessionUser>): void {
+  if (state.status === 'authenticated' && state.user) setState({ ...state, user: { ...state.user, ...patch } });
 }
 
 /** Ends the local session (the server-side logout is done by the caller). */

@@ -10,3 +10,5 @@ export * from './CountUp';
 export * from './DotWave';
 export * from './PointerEffects';
 export * from './WordReveal';
+export * from './Avatar';
+export * from './SelectField';

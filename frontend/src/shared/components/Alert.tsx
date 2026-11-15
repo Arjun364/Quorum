@@ -3,6 +3,7 @@ import type { AlertProps, AlertTone } from '../types';
 const TONES: Record<AlertTone, string> = {
   error: 'border-danger/40 bg-danger-soft text-ink',
   info: 'border-line bg-surface-2 text-ink',
+  success: 'border-ok/40 bg-ok-soft text-ink',
 };
 
 /** Renders an inline message; errors are announced politely to screen readers. */
