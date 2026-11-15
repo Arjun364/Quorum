@@ -1,4 +1,4 @@
-# CLAUDE.md: Department Application
+# CLAUDE.md: Quorum
 
 Read this file first, then `docs/PROJECT_SPEC.md` (v7), the full specification. Follow it exactly. If something is unclear or missing, ask me before guessing, and add the decision to section 18 of the spec.
 

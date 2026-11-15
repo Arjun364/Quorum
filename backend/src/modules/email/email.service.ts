@@ -48,7 +48,7 @@ export class EmailService {
     // Only tests provide this; in the app it is absent and SMTP settings are used.
     @Optional() @Inject(MAIL_TRANSPORT) transport?: Transporter,
   ) {
-    this.from = config.get<string>('MAIL_FROM') ?? 'Department App <no-reply@localhost>';
+    this.from = config.get<string>('MAIL_FROM') ?? 'Quorum <no-reply@localhost>';
     const user = config.get<string>('SMTP_USER');
     this.transport =
       transport ??

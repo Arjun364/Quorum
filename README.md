@@ -1,4 +1,4 @@
-# Department Minutes
+# Quorum
 
 A multi-tenant application for running monthly department meetings: the dept head starts the meeting, a randomly drawn note-taker compiles the minutes, each named owner confirms their own points, the dept head approves, and unfinished points carry over automatically.
 

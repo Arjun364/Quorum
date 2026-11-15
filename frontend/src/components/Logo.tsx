@@ -13,7 +13,7 @@ export function Logo({ className = '' }: { className?: string }) {
         />
       </svg>
       <span className="font-display text-lg font-semibold tracking-tight" translate="no">
-        Department Minutes
+        Quorum
       </span>
     </span>
   );

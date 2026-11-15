@@ -183,7 +183,7 @@ export class AuthService {
       to: updated.email,
       subject: 'Your password was changed',
       heading: 'Password changed',
-      body: 'Your Department App password was just changed. If this was not you, contact your administrator.',
+      body: 'Your Quorum password was just changed. If this was not you, contact your administrator.',
       link: { url: `${appUrl}/login`, label: 'Open the app' },
       type: 'PasswordChanged',
       userId,

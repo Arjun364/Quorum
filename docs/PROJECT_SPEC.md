@@ -1,4 +1,4 @@
-# Department Application: Project Specification (v7)
+# Quorum: Project Specification (v7)
 
 This is the complete specification. Build exactly what is written here. If something is unclear or missing, ask before guessing, and record the decision in section 17.
 
@@ -233,7 +233,7 @@ Confirming ─force-conclude─▶ Concluded
 ## 8. Project structure
 
 ```
-department-app/
+quorum/
 ├── CLAUDE.md
 ├── README.md
 ├── docker-compose.yml                 postgres, mailpit (+ api optional)
@@ -455,4 +455,4 @@ Daily tasks, subtasks, time tracking, Kanban, Zoho synchronization, replying to 
 - 2026-11-15 (M0): Tenant isolation is enforced by a Prisma client extension (`PrismaService.tenant`) that forces `organizationId` into every query on tenant models and throws when no organization is in context. The raw client is used only for login, refresh and bootstrap.
 - 2026-11-15 (M0): The refresh cookie is scoped to `/api/auth`, SameSite=Lax, httpOnly. Refresh tokens rotate; reuse of a rotated token revokes every session of that user. After 5 failed logins an account is locked for 15 minutes.
 - 2026-11-15 (M0): The guard reloads the user from the database on every request, so deactivation and password-change requirements take effect immediately.
-- Open: hosting choice for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).
+- 2026-11-15: The product is named **Quorum** (the minimum present to hold a valid meeting, matching the 3-person rule). Repository: github.com/Arjun364/Quorum. for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).
