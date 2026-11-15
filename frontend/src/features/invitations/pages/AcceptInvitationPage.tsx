@@ -20,16 +20,16 @@ export function AcceptInvitationPage() {
         {page.isLoading && <p role="status" className="text-muted">Loading your invitation…</p>}
         {page.isInvalid && (
           <>
-            <h1 className="font-display text-4xl font-semibold tracking-tight">This invitation does not work</h1>
+            <h1 className="text-4xl font-medium leading-[1.05] sm:text-5xl">This invitation does not work</h1>
             <p className="mt-3 text-muted text-pretty">It may have been used, revoked or expired. Ask the person who invited you for a new one.</p>
           </>
         )}
         {page.invitation && (
           <>
-            <p data-enter className="text-sm font-medium uppercase tracking-widest text-muted">
+            <p data-enter className="eyebrow">
               You are invited
             </p>
-            <h1 data-enter style={stagger(1)} className="mt-2 font-display text-4xl font-semibold tracking-tight">
+            <h1 data-enter style={stagger(1)} className="mt-2 text-4xl font-medium leading-[1.05] sm:text-5xl">
               Welcome, {page.invitation.name.split(' ')[0]}
             </h1>
             <p data-enter style={stagger(2)} className="mt-2 text-muted text-pretty">

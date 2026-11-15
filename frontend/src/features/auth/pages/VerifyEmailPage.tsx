@@ -24,7 +24,7 @@ export function VerifyEmailPage() {
                 <path d="m5 12.5 4.2 4.2L19 7" />
               </svg>
             </span>
-            <h1 data-enter className="mt-6 font-display text-4xl font-semibold tracking-tight">Your email is verified</h1>
+            <h1 data-enter className="mt-6 text-4xl font-medium leading-[1.05] sm:text-5xl">Your email is verified</h1>
             <p data-enter className="mt-3 text-muted">{name} is now active. Sign in to set up your organizations.</p>
             <Link to="/login" className="mt-8 inline-block" data-enter>
               <Button>Sign In</Button>
@@ -33,7 +33,7 @@ export function VerifyEmailPage() {
         )}
         {status === 'invalid' && (
           <>
-            <h1 className="mt-16 font-display text-4xl font-semibold tracking-tight">This link does not work</h1>
+            <h1 className="mt-16 text-4xl font-medium leading-[1.05] sm:text-5xl">This link does not work</h1>
             <p className="mt-3 text-muted text-pretty">It may have been used already or expired. Sign in to ask for a new verification email.</p>
             <Link to="/login" className="mt-8 inline-block">
               <Button variant="secondary">Go to Sign In</Button>

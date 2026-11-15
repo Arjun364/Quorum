@@ -5,3 +5,4 @@ export * from './Logo';
 export * from './PasswordField';
 export * from './PasswordRequirements';
 export * from './TextField';
+export * from './Icon';

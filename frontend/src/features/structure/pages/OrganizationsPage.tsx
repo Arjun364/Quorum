@@ -10,10 +10,10 @@ export function OrganizationsPage() {
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p data-enter className="text-sm font-medium uppercase tracking-widest text-muted">
+          <p data-enter className="eyebrow">
             Company
           </p>
-          <h1 data-enter style={stagger(1)} className="mt-1 font-display text-4xl font-semibold tracking-tight">
+          <h1 data-enter style={stagger(1)} className="mt-3 text-4xl font-medium leading-[1.05] sm:text-5xl">
             Organizations
           </h1>
           <p data-enter style={stagger(2)} className="mt-2 text-muted">
@@ -27,7 +27,7 @@ export function OrganizationsPage() {
         {page.loadFailed && <Alert tone="error">We could not load your organizations. Reload the page to try again.</Alert>}
         {page.isLoading && <p role="status" className="text-muted">Loading…</p>}
         {!page.isLoading && page.organizations.length === 0 && !page.loadFailed && (
-          <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-14 text-center">
+          <div className="card border-dashed px-6 py-16 text-center">
             <p className="font-medium">No organizations yet</p>
             <p className="mx-auto mt-1 max-w-md text-sm text-muted">Create the first one, then add its departments.</p>
           </div>

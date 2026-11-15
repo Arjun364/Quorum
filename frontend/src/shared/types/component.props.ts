@@ -46,6 +46,15 @@ export interface DialogProps {
 }
 
 /** Props of the product logo. */
+export type IconName = 'home' | 'building' | 'palette' | 'logout' | 'check' | 'arrow' | 'users' | 'mail' | 'clock';
+
+/** Props of an icon: one of the named line icons, sized by `className`. */
+export interface IconProps {
+  name: IconName;
+  className?: string;
+}
+
+/** Props of the logo. */
 export interface LogoProps {
   className?: string;
 }

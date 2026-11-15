@@ -17,7 +17,7 @@ export function LoginPage() {
             <BrandMark name={name} logoUrl={login.company?.logoUrl ?? null} />
             <span className="font-display text-lg font-semibold tracking-tight">{name}</span>
           </div>
-          <h1 data-enter style={stagger(1)} className="font-display text-3xl font-semibold tracking-tight">
+          <h1 data-enter style={stagger(1)} className="font-display text-4xl font-medium leading-tight">
             Sign In
           </h1>
           <p data-enter style={stagger(2)} className="mt-2 text-muted">

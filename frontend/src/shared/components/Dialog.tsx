@@ -20,7 +20,7 @@ export function Dialog({ open, title, description, onClose, children }: DialogPr
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="dialog m-auto w-[min(32rem,calc(100%-2rem))] rounded-2xl border border-line bg-surface p-0 text-ink shadow-[var(--shadow-3)]"
+      className="dialog m-auto w-[min(32rem,calc(100%-2rem))] card p-0 text-ink shadow-[var(--shadow-3)]"
     >
       {open && (
         <div className="p-6 sm:p-7">

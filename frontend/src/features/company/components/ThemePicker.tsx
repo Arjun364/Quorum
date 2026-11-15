@@ -12,7 +12,7 @@ export function ThemePicker({ preset, customColor, customProblem, onPreset, onCu
             type="button"
             aria-pressed={preset === item.id}
             onClick={() => onPreset(item.id)}
-            className={`lift rounded-xl border-2 bg-surface p-3 text-left ${preset === item.id ? 'border-accent shadow-[var(--ring)]' : 'border-line'}`}
+            className={`lift rounded-lg border-2 bg-surface p-3 text-left ${preset === item.id ? 'border-accent shadow-[var(--ring)]' : 'border-line'}`}
           >
             <span className="mb-2 flex gap-1" aria-hidden="true">
               <i className="h-6 flex-1 rounded-md" style={{ background: item.accent }} />
@@ -34,7 +34,7 @@ export function ThemePicker({ preset, customColor, customProblem, onPreset, onCu
             type="color"
             value={customColor}
             onChange={(event) => onCustomColor(event.target.value)}
-            className="h-12 w-14 cursor-pointer rounded-xl border border-line bg-surface p-1"
+            className="h-12 w-14 cursor-pointer rounded-lg border border-line bg-surface p-1"
           />
           <span className="text-sm text-muted tabular-nums">{customColor}</span>
           {preset === 'Custom' && (

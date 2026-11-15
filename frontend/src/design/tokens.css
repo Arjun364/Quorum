@@ -8,40 +8,40 @@
 :root {
   color-scheme: light dark;
 
-  --bg: #f6f4ef;
-  --surface: #fffdf8;
-  --surface-2: #efece4;
-  --ink: #1c1c1a;
-  --muted: #5c5a53;
-  --line: #d9d5c9;
-  --accent: #1f3a34;
-  --accent-hover: #2b4d45;
-  --accent-ink: #f6f4ef;
-  --accent-soft: #dfe9e3;
-  --danger: #a3321f;
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --surface-2: #eaeef5;
+  --ink: #0a0d14;
+  --muted: #4f5a6b;
+  --line: #d8deea;
+  --accent: #1768b8;
+  --accent-hover: #12579c;
+  --accent-ink: #ffffff;
+  --accent-soft: #e0edfa;
+  --danger: #b3321f;
   --danger-soft: #fbe9e5;
-  --ok: #2f6b4f;
-  --ok-soft: #e1efe7;
+  --ok: #1f7a52;
+  --ok-soft: #dff1e8;
   --warn: #8a5a00;
   --warn-soft: #f6ecd2;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161513;
-    --surface: #1e1d1a;
-    --surface-2: #272622;
-    --ink: #ece9e1;
-    --muted: #a9a59a;
-    --line: #38362f;
-    --accent: #8fc7b3;
-    --accent-hover: #a6d6c4;
-    --accent-ink: #10201c;
-    --accent-soft: #223630;
+    --bg: #0a0d14;
+    --surface: #131824;
+    --surface-2: #1b2232;
+    --ink: #e9edf3;
+    --muted: #8891a1;
+    --line: #232b3c;
+    --accent: #5ab9fc;
+    --accent-hover: #7cc8fd;
+    --accent-ink: #0a0d14;
+    --accent-soft: #11263b;
     --danger: #f0907d;
     --danger-soft: #3a1f19;
-    --ok: #86c9a6;
-    --ok-soft: #1d3028;
+    --ok: #6fd0a0;
+    --ok-soft: #12302a;
     --warn: #e2b95f;
     --warn-soft: #36290f;
   }
@@ -65,8 +65,9 @@
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
 
-  --font-sans: ui-sans-serif, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: "Instrument Sans", ui-sans-serif, "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 @layer base {
@@ -84,6 +85,10 @@
   }
   h1, h2, h3 {
     text-wrap: balance;
+  }
+  h1, h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
   }
   button, a, input, select, textarea, summary {
     touch-action: manipulation;
@@ -141,6 +146,9 @@
   0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
   70%  { box-shadow: 0 0 0 6px transparent; opacity: 0.85; }
   100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+@keyframes orb-drift {
+  to { transform: rotate(360deg); }
 }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -214,6 +222,98 @@
 
   /* Status dot that gently pulses while something is waiting. */
   .pulse-dot { animation: pulse-dot 2.2s ease-out infinite; }
+
+  /* Cards: one surface style for panels, tiles and rows (a faint top highlight gives the dark theme depth). */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), var(--shadow-1);
+  }
+
+  /* Small mono label used for eyebrows, ids and numbers. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+  /* App ground: a soft accent glow from the top and a faint grid that fades out. */
+  .app-ground {
+    background:
+      radial-gradient(60rem 28rem at 12% -8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+      var(--bg);
+  }
+  .app-ground::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--ink) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--ink) 4%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 55% at 30% 0%, #000 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 55% at 30% 0%, #000 0%, transparent 75%);
+  }
+  .app-ground > * { position: relative; }
+
+  /* A glowing sphere for the public website's hero: dark core, bright accent rim, slow drifting swirl. */
+  .orb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle at 50% 50%, #04070d 56%, color-mix(in srgb, var(--accent) 70%, transparent) 62%, transparent 72%),
+      radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 55%);
+    box-shadow: 0 0 120px color-mix(in srgb, var(--accent) 30%, transparent), inset 0 0 70px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  .orb::before {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 9999px;
+    background: conic-gradient(from 0deg, transparent 0 20%, color-mix(in srgb, var(--accent) 28%, transparent) 35%, transparent 50% 70%, color-mix(in srgb, var(--accent) 20%, transparent) 85%, transparent);
+    filter: blur(22px);
+    animation: orb-drift 42s linear infinite;
+  }
+
+  /* Navigation items of the sidebar. */
+  .nav-item { transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out); }
+  .nav-item[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+
+  /* Brand panel of the sign-in page: two soft accent glows and a fading grid on the page ground. */
+  .hero-ground {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(34rem 26rem at 95% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+      radial-gradient(30rem 24rem at 0% 100%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+      var(--surface);
+  }
+  .hero-ground::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--ink) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--ink) 5%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, #000 0%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, #000 0%, transparent 80%);
+  }
+  .hero-ground > * { position: relative; }
+
+  /* Accent glow behind a featured panel. */
+  .glow-panel {
+    background:
+      radial-gradient(28rem 14rem at 100% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+      var(--surface);
+  }
 
   /* Frosted sticky header. */
   .glass { backdrop-filter: saturate(160%) blur(12px); background-color: color-mix(in srgb, var(--surface) 78%, transparent); }

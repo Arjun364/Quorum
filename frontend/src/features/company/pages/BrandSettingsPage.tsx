@@ -10,10 +10,10 @@ export function BrandSettingsPage() {
 
   return (
     <>
-      <p data-enter className="text-sm font-medium uppercase tracking-widest text-muted">
+      <p data-enter className="eyebrow">
         Settings
       </p>
-      <h1 data-enter className="mt-1 font-display text-4xl font-semibold tracking-tight">
+      <h1 data-enter className="mt-1 text-4xl font-medium leading-[1.05] sm:text-5xl">
         Brand
       </h1>
       <p data-enter className="mt-2 max-w-xl text-muted text-pretty">

@@ -6,8 +6,8 @@ import { HOW_IT_WORKS, SECURITY_FACTS } from '../constants';
 /** Public website on the platform's own address: what Quorum does, how it works, how data is kept, and the two ways in. */
 export function LandingPage() {
   return (
-    <div className="min-h-dvh">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-xl focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
+    <div className="app-ground min-h-dvh">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">
         Skip to Main Content
       </a>
       <header className="mx-auto flex max-w-5xl items-center justify-between px-5 py-6">
@@ -17,11 +17,12 @@ export function LandingPage() {
         </Link>
       </header>
       <main id="main">
-        <section className="mx-auto max-w-5xl px-5 pb-20 pt-16 sm:pt-24">
-          <p data-enter className="text-sm font-medium uppercase tracking-widest text-muted">
+        <section className="mx-auto grid max-w-5xl items-center gap-12 px-5 pb-24 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div>
+          <p data-enter className="eyebrow">
             Monthly department meetings
           </p>
-          <h1 data-enter style={stagger(1)} className="mt-4 max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight text-balance sm:text-6xl">
+          <h1 data-enter style={stagger(1)} className="mt-4 max-w-3xl text-5xl font-medium leading-[1.03] text-balance sm:text-7xl">
             Every point has an owner. Every meeting ends confirmed.
           </h1>
           <p data-enter style={stagger(2)} className="mt-6 max-w-xl text-lg text-muted text-pretty">
@@ -35,11 +36,13 @@ export function LandingPage() {
               Already registered?
             </a>
           </div>
+        </div>
+          <div aria-hidden="true" data-enter="fade" className="orb mx-auto w-full max-w-sm lg:max-w-none" />
         </section>
 
         <section aria-labelledby="how-heading" className="border-y border-line bg-surface">
           <div className="mx-auto max-w-5xl px-5 py-16">
-            <h2 id="how-heading" className="font-display text-3xl font-semibold tracking-tight">
+            <h2 id="how-heading" className="text-3xl font-medium leading-tight">
               How it works
             </h2>
             <ol className="mt-10 grid gap-8 sm:grid-cols-3">
@@ -55,12 +58,12 @@ export function LandingPage() {
         </section>
 
         <section aria-labelledby="safe-heading" className="mx-auto max-w-5xl px-5 py-16">
-          <h2 id="safe-heading" className="font-display text-3xl font-semibold tracking-tight">
+          <h2 id="safe-heading" className="text-3xl font-medium leading-tight">
             How your data is kept
           </h2>
           <ul className="mt-8 grid gap-4 sm:grid-cols-2">
             {SECURITY_FACTS.map((fact) => (
-              <li key={fact} className="rounded-2xl border border-line bg-surface p-5 text-sm text-pretty">
+              <li key={fact} className="card p-5 text-sm text-pretty">
                 {fact}
               </li>
             ))}
@@ -69,7 +72,7 @@ export function LandingPage() {
 
         <section id="find" aria-labelledby="find-heading" className="border-t border-line bg-surface">
           <div className="mx-auto max-w-5xl px-5 py-16">
-            <h2 id="find-heading" className="font-display text-3xl font-semibold tracking-tight">
+            <h2 id="find-heading" className="text-3xl font-medium leading-tight">
               Find your company
             </h2>
             <p className="mt-2 max-w-lg text-muted">Each company signs in on its own address. Type yours to go there.</p>

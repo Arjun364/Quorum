@@ -12,3 +12,10 @@ export interface SetupStep {
   to: string;
   done: boolean;
 }
+
+/** One figure on the home page. */
+export interface StatTile {
+  label: string;
+  value: string;
+  note: string;
+}

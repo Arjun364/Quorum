@@ -1,9 +1,10 @@
-import type { EmptyStateCopy, SetupStep } from './home.types';
+import type { EmptyStateCopy, SetupStep, StatTile } from './home.types';
 
 /** Props of the greeting at the top of the home page. */
 export interface WelcomeHeaderProps {
   roleLabel: string;
   name: string;
+  companyName: string;
 }
 
 /** Props of the "Waiting for You" section. */
@@ -14,4 +15,9 @@ export interface WaitingForYouProps {
 /** Props of the company head's setup checklist. */
 export interface SetupChecklistProps {
   steps: SetupStep[];
+}
+
+/** Props of the row of figures. */
+export interface StatTilesProps {
+  tiles: StatTile[];
 }

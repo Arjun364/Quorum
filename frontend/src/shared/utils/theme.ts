@@ -14,9 +14,9 @@ export interface BrandTheme {
 
 type Rgb = [number, number, number];
 
-const PAGE_LIGHT = '#fffdf8';
-const SURFACE_DARK = '#1e1d1a';
-const INK_DARK = '#161513';
+const PAGE_LIGHT = '#ffffff';
+const SURFACE_DARK = '#131824';
+const INK_DARK = '#0a0d14';
 const INK_LIGHT = '#ffffff';
 
 /** Parses "#rrggbb" into channels, or null when it is not such a colour. */
@@ -62,9 +62,36 @@ export function readableInk(background: string): string {
   return contrast(background, INK_LIGHT) >= contrast(background, INK_DARK) ? INK_LIGHT : INK_DARK;
 }
 
+/** Lifts a brand colour for the dark theme: same hue, brighter, and more saturated unless the brand is deliberately grey. */
+function brightenForDark(accent: string): string {
+  const rgb = parseHex(accent);
+  if (!rgb) return accent;
+  const [r, g, b] = rgb.map((v) => v / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d > 0) {
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  const l0 = (max + min) / 2;
+  const s0 = d === 0 ? 0 : d / (1 - Math.abs(2 * l0 - 1));
+  const s = s0 < 0.12 ? s0 : Math.min(0.85, Math.max(s0, 0.6));
+  const l = 0.68;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  const [r1, g1, b1] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return toHex([(r1 + m) * 255, (g1 + m) * 255, (b1 + m) * 255]);
+}
+
 /** Derives the full light and dark token sets from one accent colour. */
 export function deriveTheme(accent: string): BrandTheme {
-  const darkAccent = mix(accent, '#ffffff', 0.62);
+  const darkAccent = brightenForDark(accent);
   return {
     light: {
       accent,
@@ -76,7 +103,7 @@ export function deriveTheme(accent: string): BrandTheme {
       accent: darkAccent,
       accentHover: mix(darkAccent, '#ffffff', 0.18),
       accentInk: readableInk(darkAccent),
-      accentSoft: mix(accent, SURFACE_DARK, 0.78),
+      accentSoft: mix(darkAccent, SURFACE_DARK, 0.84),
     },
   };
 }

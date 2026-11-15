@@ -27,7 +27,7 @@ export function ChangePasswordPage() {
         </Button>
       </header>
       <main id="main" className="mx-auto max-w-xl px-5 pb-16">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Choose a New Password</h1>
+        <h1 className="text-3xl font-medium leading-tight">Choose a New Password</h1>
         <p className="mt-2 text-muted text-pretty">
           {isForced
             ? 'You are using a temporary password. Choose your own to continue.'

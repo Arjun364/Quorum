@@ -8,13 +8,13 @@ export function DepartmentRow({ department, isBusy, onInvite, onResend, onRevoke
   return (
     <li className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
       <div className="flex min-w-0 items-center gap-3.5">
-        <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-soft text-sm font-bold text-accent">
+        <span aria-hidden="true" className="num grid size-10 shrink-0 place-items-center rounded-lg bg-accent-soft text-xs font-medium text-accent">
           {initialsOf(department.name)}
         </span>
         <div className="min-w-0">
           <p className="truncate font-medium">{department.name}</p>
           <p className="text-sm text-muted">
-            {department.code} · {department.memberCount} {department.memberCount === 1 ? 'person' : 'people'}
+            <span className="num">{department.code}</span> · {department.memberCount} {department.memberCount === 1 ? 'person' : 'people'}
           </p>
         </div>
       </div>

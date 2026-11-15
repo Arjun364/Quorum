@@ -15,7 +15,7 @@ export function ChangePasswordForm({
   onSubmit,
 }: ChangePasswordFormProps) {
   return (
-    <form onSubmit={onSubmit} noValidate className="mt-8 space-y-5 rounded-xl border border-line bg-surface p-6">
+    <form onSubmit={onSubmit} noValidate className="mt-8 space-y-5 rounded-lg border border-line bg-surface p-6">
       {formErrors && (
         <Alert tone="error">
           <ul className="list-inside list-disc space-y-0.5">

@@ -1,72 +1,109 @@
-import { useSession, useSignOut } from '@/features/auth';
+import { ROLE_LABELS, useSession, useSignOut } from '@/features/auth';
 import { BrandMark, useCompanyPublic } from '@/features/company';
-import { Button } from '@/shared';
-import type { SystemRole } from '@/shared';
+import { Icon, initialsOf } from '@/shared';
+import type { IconName, SystemRole } from '@/shared';
 import { NavLink, Outlet } from 'react-router-dom';
 
 interface NavItem {
   to: string;
   label: string;
+  icon: IconName;
   roles: SystemRole[];
   end?: boolean;
 }
 
 /** Navigation of the signed-in shell; each entry lists the roles that see it (the server enforces the same rules). */
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Home', roles: ['CompanyHead', 'DepartmentHead', 'Employee'], end: true },
-  { to: '/organizations', label: 'Organizations', roles: ['CompanyHead'] },
-  { to: '/settings/brand', label: 'Brand', roles: ['CompanyHead'] },
+  { to: '/', label: 'Home', icon: 'home', roles: ['CompanyHead', 'DepartmentHead', 'Employee'], end: true },
+  { to: '/organizations', label: 'Organizations', icon: 'building', roles: ['CompanyHead'] },
+  { to: '/settings/brand', label: 'Brand', icon: 'palette', roles: ['CompanyHead'] },
 ];
 
-/** Layout of every signed-in page: skip link, header with the company brand, role-based navigation, account and sign-out, and the page outlet. */
+/** Layout of every signed-in page: a sidebar with the company brand, role-based navigation and the account on desktop; a top bar with the same on a phone. */
 export function AppShell() {
   const { user } = useSession();
   const { signOut } = useSignOut();
   const { company } = useCompanyPublic();
   const items = NAV_ITEMS.filter((item) => user && item.roles.includes(user.systemRole));
+  const companyName = company?.name ?? 'Quorum';
+
+  const link = (item: NavItem, extra: string) => (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      end={item.end}
+      className={`nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-ink ${extra}`}
+    >
+      <Icon name={item.icon} className="size-[18px]" />
+      {item.label}
+    </NavLink>
+  );
 
   return (
-    <div className="min-h-dvh">
+    <div className="app-ground min-h-dvh lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-xl focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
       >
         Skip to Main Content
       </a>
-      <header className="glass sticky top-0 z-30 border-b border-line">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <BrandMark name={company?.name ?? 'Quorum'} logoUrl={company?.logoUrl ?? null} />
-            <span className="truncate font-display text-lg font-semibold tracking-tight">{company?.name ?? 'Quorum'}</span>
-          </div>
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="hidden min-w-0 truncate text-sm text-muted md:block">{user?.email}</span>
-            <Button variant="secondary" onClick={() => void signOut()}>
-              Sign Out
-            </Button>
-          </div>
+
+      <aside className="sticky top-0 z-30 hidden h-dvh flex-col border-r border-line bg-surface/70 p-4 backdrop-blur lg:flex">
+        <div className="flex items-center gap-3 px-2 py-3">
+          <BrandMark name={companyName} logoUrl={company?.logoUrl ?? null} className="!size-9" />
+          <span className="truncate font-display text-lg font-semibold tracking-tight">{companyName}</span>
         </div>
-        {items.length > 1 && (
-          <nav aria-label="Main" className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4">
-            {items.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `shrink-0 border-b-2 px-3 py-2 text-sm font-medium ${isActive ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink'}`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
-      </header>
-      <main id="main" className="mx-auto max-w-5xl px-5 py-10">
-        <Outlet />
-      </main>
-      {company?.showPoweredBy && <footer className="mx-auto max-w-5xl px-5 pb-10 text-xs text-muted">Powered by Quorum</footer>}
+        <nav aria-label="Main" className="mt-6 flex flex-col gap-1">
+          {items.map((item) => link(item, ''))}
+        </nav>
+        <div className="mt-auto">
+          <div className="card flex items-center gap-3 p-3">
+            <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">
+              {initialsOf(user?.name ?? '?')}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{user?.name}</p>
+              <p className="eyebrow truncate !text-[0.65rem]">{user ? ROLE_LABELS[user.systemRole] : ''}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              aria-label="Sign out"
+              className="press grid size-9 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
+            >
+              <Icon name="logout" className="size-[18px]" />
+            </button>
+          </div>
+          {company?.showPoweredBy && <p className="eyebrow mt-3 px-2 !text-[0.65rem]">Powered by Quorum</p>}
+        </div>
+      </aside>
+
+      <div className="min-w-0">
+        <header className="glass sticky top-0 z-30 border-b border-line lg:hidden">
+          <div className="flex items-center justify-between gap-3 px-4 py-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <BrandMark name={companyName} logoUrl={company?.logoUrl ?? null} />
+              <span className="truncate font-display text-lg font-semibold tracking-tight">{companyName}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              aria-label="Sign out"
+              className="press grid size-10 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
+            >
+              <Icon name="logout" />
+            </button>
+          </div>
+          {items.length > 1 && (
+            <nav aria-label="Main" className="flex gap-1 overflow-x-auto px-3 pb-2">
+              {items.map((item) => link(item, 'shrink-0'))}
+            </nav>
+          )}
+        </header>
+        <main id="main" className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-12">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

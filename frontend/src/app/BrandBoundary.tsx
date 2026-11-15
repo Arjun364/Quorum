@@ -18,7 +18,7 @@ export function BrandBoundary() {
   if (notFound) {
     return (
       <main id="main" className="mx-auto grid min-h-dvh max-w-md place-content-center px-5 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">No company at this address</h1>
+        <h1 className="text-3xl font-medium leading-tight">No company at this address</h1>
         <p className="mt-3 text-muted text-pretty">Check the address, or ask your company head for the right link.</p>
       </main>
     );

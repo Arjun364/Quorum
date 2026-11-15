@@ -20,7 +20,7 @@ export function CheckEmailPage() {
             <path d="m4 7 8 6 8-6" />
           </svg>
         </span>
-        <h1 data-enter className="mt-6 font-display text-4xl font-semibold tracking-tight">
+        <h1 data-enter className="mt-6 text-4xl font-medium leading-[1.05] sm:text-5xl">
           Check your inbox
         </h1>
         <p data-enter className="mt-3 text-muted text-pretty">

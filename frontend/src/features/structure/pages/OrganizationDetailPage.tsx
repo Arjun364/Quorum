@@ -18,22 +18,22 @@ export function OrganizationDetailPage() {
 
   return (
     <>
-      <nav aria-label="Breadcrumb" className="text-sm text-muted">
+      <nav aria-label="Breadcrumb" className="eyebrow">
         <Link to="/organizations" className="link-draw hover:text-ink">Organizations</Link> <span aria-hidden="true">›</span> {page.organization.name}
       </nav>
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 data-enter className="font-display text-4xl font-semibold tracking-tight">
-            Departments
+          <h1 data-enter className="text-4xl font-medium leading-[1.05] sm:text-5xl">
+            {page.organization.name}
           </h1>
           <p data-enter style={stagger(1)} className="mt-2 text-muted">
-            {page.organization.name} · {page.departments.length} {page.departments.length === 1 ? 'department' : 'departments'}
+            <span className="num">{page.organization.code}</span> · {page.departments.length} {page.departments.length === 1 ? 'department' : 'departments'}
           </p>
         </div>
         <Button onClick={page.openDepartmentDialog}>New Department</Button>
       </div>
 
-      <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-surface">
+      <div className="card mt-10 overflow-hidden">
         {page.departments.length === 0 ? (
           <div className="px-6 py-14 text-center">
             <p className="font-medium">No departments yet</p>

@@ -18,10 +18,10 @@ export function StartPage() {
         </Link>
       </header>
       <main id="main" className="mx-auto max-w-2xl px-5 pb-20">
-        <p data-enter className="text-sm font-medium uppercase tracking-widest text-muted">
+        <p data-enter className="eyebrow">
           Step 1 of 4 · Company
         </p>
-        <h1 data-enter style={stagger(1)} className="mt-2 font-display text-4xl font-semibold tracking-tight">
+        <h1 data-enter style={stagger(1)} className="mt-2 text-4xl font-medium leading-[1.05] sm:text-5xl">
           Start your organization
         </h1>
         <p data-enter style={stagger(2)} className="mt-2 text-muted text-pretty">
