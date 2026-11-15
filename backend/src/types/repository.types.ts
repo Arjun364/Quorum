@@ -1,12 +1,14 @@
 import type {
   Company,
   Department,
+  DepartmentTransfer,
   EmailVerificationToken,
   Invitation,
   Organization,
   Prisma,
   RefreshToken,
   SystemRole,
+  TransferStatus,
   User,
 } from '@prisma/client';
 import type { AuthUser } from './auth.types';
@@ -109,11 +111,19 @@ export type DepartmentWithHead = Department & {
   memberCount: number;
 };
 
+/** A department with its organization and head (if any). */
+export type DepartmentWithOrganization = Department & {
+  organization: Pick<Organization, 'id' | 'name'>;
+  head: Pick<User, 'id' | 'name'> | null;
+};
+
 /** Data access for departments. Every method is limited to one company. */
 export interface DepartmentRepositoryContract {
   listByOrganization(companyId: number, organizationId: number): Promise<DepartmentWithHead[]>;
   findById(companyId: number, id: number): Promise<Department | null>;
   findByCode(organizationId: number, code: string): Promise<Department | null>;
+  /** Every department of the company with its organization and head, for pickers and head lookups. */
+  listAll(companyId: number): Promise<DepartmentWithOrganization[]>;
   create(companyId: number, data: { organizationId: number; name: string; code: string; createdBy: number }): Promise<Department>;
   update(companyId: number, id: number, data: { name?: string; code?: string; isActive?: boolean }): Promise<Department>;
 }
@@ -149,4 +159,33 @@ export interface InvitationRepositoryContract {
    * accepted and, for a department head, makes them the department's head.
    */
   accept(invitationId: number, user: { name: string; passwordHash: string }): Promise<User>;
+}
+
+/** Data access for people (users) of one company: lists, profile edits, deactivation and moves. */
+export interface PeopleRepositoryContract {
+  listByDepartment(companyId: number, departmentId: number): Promise<User[]>;
+  findInCompany(companyId: number, id: number): Promise<User | null>;
+  findCompanyHead(companyId: number): Promise<User | null>;
+  updateProfile(companyId: number, id: number, data: { name?: string; jobTitle?: string | null; phone?: string | null }): Promise<User>;
+  setAvatar(companyId: number, id: number, data: { avatarUrl: string | null; avatarPublicId: string | null }): Promise<User>;
+  deactivate(companyId: number, id: number): Promise<User>;
+}
+
+/** A transfer with the names needed to show it. */
+export type TransferWithContext = DepartmentTransfer & {
+  user: Pick<User, 'id' | 'name' | 'email'>;
+  fromDepartment: Pick<Department, 'id' | 'name' | 'organizationId' | 'headUserId'>;
+  toDepartment: Pick<Department, 'id' | 'name' | 'organizationId' | 'headUserId'>;
+};
+
+/** Data access for department transfers. */
+export interface TransferRepositoryContract {
+  create(data: Prisma.DepartmentTransferUncheckedCreateInput): Promise<DepartmentTransfer>;
+  findById(companyId: number, id: number): Promise<TransferWithContext | null>;
+  /** Newest first; `departmentIds` limits to transfers that start from or arrive at one of them. */
+  list(companyId: number, filter: { status?: TransferStatus; departmentIds?: number[] }): Promise<TransferWithContext[]>;
+  findPendingForUser(companyId: number, userId: number): Promise<DepartmentTransfer | null>;
+  update(companyId: number, id: number, data: Prisma.DepartmentTransferUncheckedUpdateInput): Promise<DepartmentTransfer>;
+  /** Marks the transfer completed and moves the person into the new department, together. */
+  complete(companyId: number, id: number, data: Prisma.DepartmentTransferUncheckedUpdateInput, userId: number, toDepartmentId: number): Promise<void>;
 }

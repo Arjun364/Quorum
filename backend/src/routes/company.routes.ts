@@ -44,8 +44,6 @@ export function createCompanyHeadRouter(
   router.post('/organizations/:id/departments', ...head, validateParams(idParamSchema), validateBody(nameAndCodeSchema), structure.createDepartment);
   router.put('/departments/:id', ...head, validateParams(idParamSchema), validateBody(structureUpdateSchema), structure.updateDepartment);
   router.post('/departments/:id/head-invitation', ...head, validateParams(idParamSchema), validateBody(inviteSchema), structure.inviteHead);
-  router.post('/invitations/:id/resend', ...head, validateParams(idParamSchema), structure.resendInvitation);
-  router.delete('/invitations/:id', ...head, validateParams(idParamSchema), structure.revokeInvitation);
   return router;
 }
 

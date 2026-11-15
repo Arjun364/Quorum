@@ -18,6 +18,8 @@ export interface UserResponse {
   companyId: number | null;
   departmentId: number | null;
   jobTitle: string | null;
+  phone: string | null;
+  avatarUrl: string | null;
   mustChangePassword: boolean;
 }
 
@@ -44,6 +46,8 @@ export function toUserResponse(user: User): UserResponse {
     companyId: user.companyId,
     departmentId: user.departmentId,
     jobTitle: user.jobTitle,
+    phone: user.phone,
+    avatarUrl: user.avatarUrl,
     mustChangePassword: user.mustChangePassword,
   };
 }

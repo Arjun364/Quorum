@@ -1,0 +1,37 @@
+enum TransferStatus {
+  Pending
+  Completed
+  Rejected
+  Cancelled
+}
+
+/// A request to move one person to another department. It completes only when every required approval is in.
+model DepartmentTransfer {
+  id                    Int            @id @default(autoincrement())
+  companyId             Int
+  company               Company        @relation(fields: [companyId], references: [id])
+  userId                Int
+  user                  User           @relation("TransferPerson", fields: [userId], references: [id])
+  fromDepartmentId      Int
+  fromDepartment        Department     @relation("TransferFrom", fields: [fromDepartmentId], references: [id])
+  toDepartmentId        Int
+  toDepartment          Department     @relation("TransferTo", fields: [toDepartmentId], references: [id])
+  initiatedBy           Int
+  status                TransferStatus @default(Pending)
+  /// which approvals this move needs: both department heads inside one organization, plus the company head across organizations
+  needFromHead          Boolean
+  needToHead            Boolean
+  needCompanyHead       Boolean
+  fromHeadApprovedAt    DateTime?
+  toHeadApprovedAt      DateTime?
+  companyHeadApprovedAt DateTime?
+  decidedBy             Int?
+  decisionNote          String?
+  createdAt             DateTime       @default(now())
+  completedAt           DateTime?
+
+  @@index([companyId])
+  @@index([userId])
+  @@index([fromDepartmentId])
+  @@index([toDepartmentId])
+}

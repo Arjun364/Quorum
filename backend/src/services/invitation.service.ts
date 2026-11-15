@@ -3,13 +3,14 @@ import type { AppConfig } from '../config';
 import { INVITATION_TTL_DAYS } from '../constants';
 import { generateRefreshToken, hashPassword, hashToken } from '../helpers';
 import type {
+  AuthUser,
   DepartmentRepositoryContract,
   InvitationRepositoryContract,
   InvitationWithContext,
   IssuedSession,
   UserRepositoryContract,
 } from '../types';
-import { badRequest, checkPasswordPolicy, companyUrl, conflict, notFound } from '../utils';
+import { badRequest, checkPasswordPolicy, companyUrl, conflict, forbidden, notFound } from '../utils';
 import type { AuditService } from './audit.service';
 import type { AuthService } from './auth.service';
 import type { EmailSender } from './email.service';
@@ -67,24 +68,49 @@ export class InvitationService {
     const department = await this.deps.departments.findById(company.id, departmentId);
     if (!department) throw notFound('Department not found');
     if (department.headUserId) throw conflict('This department already has a head');
+    return this.issue(company, inviterId, department, SystemRole.DepartmentHead, input);
+  }
+
+  /** Invites an employee to a department; only that department's head (or the company head) may. */
+  async inviteEmployee(company: Company, actor: AuthUser, departmentId: number, input: { name: string; email: string }): Promise<InvitationResponse> {
+    const department = await this.deps.departments.findById(company.id, departmentId);
+    if (!department) throw notFound('Department not found');
+    this.requireAuthority(actor, department.headUserId);
+    return this.issue(company, actor.id, department, SystemRole.Employee, input);
+  }
+
+  /** Creates, stores and emails one invitation (after the address check). */
+  private async issue(
+    company: Company,
+    inviterId: number,
+    department: { id: number; name: string },
+    role: SystemRole,
+    input: { name: string; email: string },
+  ): Promise<InvitationResponse> {
     const email = input.email.trim().toLowerCase();
     if (await this.deps.users.findByEmail(company.id, email)) throw conflict('Someone in your company already uses that email');
-
-    await this.deps.invitations.revokeOpenFor(company.id, departmentId, email);
+    await this.deps.invitations.revokeOpenFor(company.id, department.id, email);
     const token = generateRefreshToken();
     const invitation = await this.deps.invitations.create({
       companyId: company.id,
-      departmentId,
+      departmentId: department.id,
       email,
       name: input.name.trim(),
-      role: SystemRole.DepartmentHead,
+      role,
       tokenHash: hashToken(token),
       expiresAt: expiry(),
       invitedBy: inviterId,
     });
-    await this.deps.audit.log({ userId: inviterId, companyId: company.id, action: 'InvitationSent', entityType: 'Invitation', entityId: invitation.id, details: { role: invitation.role, departmentId } });
+    await this.deps.audit.log({ userId: inviterId, companyId: company.id, action: 'InvitationSent', entityType: 'Invitation', entityId: invitation.id, details: { role, departmentId: department.id } });
     await this.sendInvitation(company, invitation, department.name, token);
     return toInvitation(invitation);
+  }
+
+  /** Only the company head, or the head of that very department, may manage its invitations. */
+  private requireAuthority(actor: AuthUser, departmentHeadId: number | null): void {
+    if (actor.systemRole === SystemRole.CompanyHead) return;
+    if (actor.systemRole === SystemRole.DepartmentHead && departmentHeadId === actor.id) return;
+    throw forbidden('You do not have permission to do that');
   }
 
   /** Shows an invitation to the person holding its link. */
@@ -117,22 +143,33 @@ export class InvitationService {
   }
 
   /** Revokes an open invitation of the company. */
-  async revoke(companyId: number, userId: number, id: number): Promise<void> {
+  async revoke(companyId: number, actor: AuthUser, id: number): Promise<void> {
     const invitation = await this.requireOpen(companyId, id);
+    await this.requireManager(companyId, actor, invitation);
     await this.deps.invitations.revoke(companyId, invitation.id);
-    await this.deps.audit.log({ userId, companyId, action: 'InvitationRevoked', entityType: 'Invitation', entityId: id });
+    await this.deps.audit.log({ userId: actor.id, companyId, action: 'InvitationRevoked', entityType: 'Invitation', entityId: id });
   }
 
   /** Sends an open invitation again with a fresh link; the old link stops working. */
-  async resend(company: Company, userId: number, id: number): Promise<InvitationResponse> {
+  async resend(company: Company, actor: AuthUser, id: number): Promise<InvitationResponse> {
     const invitation = await this.requireOpen(company.id, id);
-    const department = await this.deps.departments.findById(company.id, invitation.departmentId);
+    const department = await this.requireManager(company.id, actor, invitation);
+    const userId = actor.id;
     const token = generateRefreshToken();
     const expiresAt = expiry();
     await this.deps.invitations.replaceToken(invitation.id, hashToken(token), expiresAt);
     await this.deps.audit.log({ userId, companyId: company.id, action: 'InvitationResent', entityType: 'Invitation', entityId: id });
-    await this.sendInvitation(company, invitation, department?.name ?? '', token);
+    await this.sendInvitation(company, invitation, department.name, token);
     return toInvitation({ ...invitation, expiresAt });
+  }
+
+  /** Loads the invitation's department and checks the actor may manage it (department heads: only employee invitations to their own department). */
+  private async requireManager(companyId: number, actor: AuthUser, invitation: Invitation) {
+    const department = await this.deps.departments.findById(companyId, invitation.departmentId);
+    if (!department) throw notFound('Department not found');
+    if (actor.systemRole === SystemRole.DepartmentHead && invitation.role !== SystemRole.Employee) throw forbidden('You do not have permission to do that');
+    this.requireAuthority(actor, department.headUserId);
+    return department;
   }
 
   /** Loads the invitation behind a link, or fails with one generic message for every way it can be unusable. */

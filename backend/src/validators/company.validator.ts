@@ -62,6 +62,23 @@ export const acceptInvitationSchema = z
   })
   .strict();
 
+/** Body of POST /transfers. */
+export const transferRequestSchema = z
+  .object({ userId: z.number().int().positive(), toDepartmentId: z.number().int().positive() })
+  .strict();
+
+/** Body of POST /transfers/:id/reject. */
+export const rejectTransferSchema = z.object({ note: z.string().trim().max(300).optional() }).strict();
+
+/** Body of PUT /profile. */
+export const profileSchema = z
+  .object({
+    name: name('your name'),
+    jobTitle: z.string().trim().max(80).nullable().optional(),
+    phone: z.string().trim().max(30).regex(/^[0-9+()\-\s.]*$/, 'Use digits, spaces and + - ( ) only').nullable().optional(),
+  })
+  .strict();
+
 /** Route parameter that is a positive integer id. */
 export const idParamSchema = z.object({ id: z.coerce.number().int().positive() });
 
@@ -72,3 +89,6 @@ export type NameAndCodeBody = z.infer<typeof nameAndCodeSchema>;
 export type StructureUpdateBody = z.infer<typeof structureUpdateSchema>;
 export type InviteBody = z.infer<typeof inviteSchema>;
 export type AcceptInvitationBody = z.infer<typeof acceptInvitationSchema>;
+export type TransferRequestBody = z.infer<typeof transferRequestSchema>;
+export type RejectTransferBody = z.infer<typeof rejectTransferSchema>;
+export type ProfileBody = z.infer<typeof profileSchema>;

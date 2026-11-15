@@ -40,4 +40,5 @@ model Company {
   departments   Department[]
   users         User[]
   invitations   Invitation[]
+  transfers     DepartmentTransfer[]
 }

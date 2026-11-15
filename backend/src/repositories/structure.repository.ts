@@ -1,5 +1,5 @@
 import type { Department, Organization, PrismaClient } from '@prisma/client';
-import type { DepartmentRepositoryContract, DepartmentWithHead, OrganizationRepositoryContract } from '../types';
+import type { DepartmentRepositoryContract, DepartmentWithHead, DepartmentWithOrganization, OrganizationRepositoryContract } from '../types';
 
 /** Reads and writes organizations; every query is limited to one company. */
 export class OrganizationRepository implements OrganizationRepositoryContract {
@@ -49,6 +49,15 @@ export class DepartmentRepository implements DepartmentRepositoryContract {
       include: { head: { select: { id: true, name: true, email: true } }, _count: { select: { members: true } } },
     });
     return rows.map(({ _count, ...dept }) => ({ ...dept, memberCount: _count.members }));
+  }
+
+  /** Lists every department of the company with its organization and head. */
+  listAll(companyId: number): Promise<DepartmentWithOrganization[]> {
+    return this.db.department.findMany({
+      where: { companyId },
+      orderBy: [{ organization: { name: 'asc' } }, { name: 'asc' }],
+      include: { organization: { select: { id: true, name: true } }, head: { select: { id: true, name: true } } },
+    });
   }
 
   /** Finds one department of the company, or null. */

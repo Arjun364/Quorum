@@ -4,6 +4,7 @@ import {
   UserStatus,
   type Company,
   type Department,
+  type DepartmentTransfer,
   type Invitation,
   type Organization,
   type Prisma,
@@ -21,7 +22,11 @@ import {
   AuthService,
   CompanyService,
   InvitationService,
+  noPointsYet,
+  PeopleService,
+  ProfileService,
   StructureService,
+  TransferService,
   type EmailSender,
   type SendEmailInput,
 } from '../../src/services';
@@ -31,12 +36,16 @@ import type {
   CompanyRepositoryContract,
   DepartmentRepositoryContract,
   DepartmentWithHead,
+  DepartmentWithOrganization,
   InvitationRepositoryContract,
   InvitationWithContext,
   NewCompanyWithHead,
   OrganizationRepositoryContract,
+  PeopleRepositoryContract,
   RefreshTokenRepositoryContract,
   RefreshTokenWithUser,
+  TransferRepositoryContract,
+  TransferWithContext,
   UserRepositoryContract,
   VerificationTokenRepositoryContract,
   VerificationTokenWithUser,
@@ -74,6 +83,9 @@ export function makeUser(overrides: Partial<User> = {}): User {
     systemRole: SystemRole.Employee,
     status: UserStatus.Active,
     jobTitle: null,
+    phone: null,
+    avatarUrl: null,
+    avatarPublicId: null,
     mustChangePassword: false,
     emailVerifiedAt: new Date(),
     failedLoginCount: 0,
@@ -264,7 +276,19 @@ export class InMemoryOrganizationRepository implements OrganizationRepositoryCon
 /** In-memory department repository. */
 export class InMemoryDepartmentRepository implements DepartmentRepositoryContract {
   readonly rows: Department[] = [];
+  /** Set by the world so listAll can name organizations. */
+  orgs: () => Organization[] = () => [];
   constructor(private readonly users: InMemoryUserRepository) {}
+
+  async listAll(companyId: number): Promise<DepartmentWithOrganization[]> {
+    return this.rows
+      .filter((d) => d.companyId === companyId)
+      .map((d) => {
+        const org = this.orgs().find((o) => o.id === d.organizationId)!;
+        const head = d.headUserId ? this.users.rows.find((u) => u.id === d.headUserId) : undefined;
+        return { ...d, organization: { id: org.id, name: org.name }, head: head ? { id: head.id, name: head.name } : null };
+      });
+  }
 
   async listByOrganization(companyId: number, organizationId: number): Promise<DepartmentWithHead[]> {
     return this.rows
@@ -359,6 +383,93 @@ export class InMemoryInvitationRepository implements InvitationRepositoryContrac
   }
 }
 
+/** In-memory people repository. */
+export class InMemoryPeopleRepository implements PeopleRepositoryContract {
+  constructor(private readonly users: InMemoryUserRepository) {}
+  async listByDepartment(companyId: number, departmentId: number) {
+    return this.users.rows.filter((u) => u.companyId === companyId && u.departmentId === departmentId).sort((a, b) => a.name.localeCompare(b.name));
+  }
+  async findInCompany(companyId: number, id: number) {
+    return this.users.rows.find((u) => u.id === id && u.companyId === companyId) ?? null;
+  }
+  async findCompanyHead(companyId: number) {
+    return this.users.rows.find((u) => u.companyId === companyId && u.systemRole === SystemRole.CompanyHead) ?? null;
+  }
+  async updateProfile(companyId: number, id: number, data: { name?: string; jobTitle?: string | null; phone?: string | null }) {
+    const user = (await this.findInCompany(companyId, id))!;
+    Object.assign(user, data);
+    return user;
+  }
+  async setAvatar(companyId: number, id: number, data: { avatarUrl: string | null; avatarPublicId: string | null }) {
+    const user = (await this.findInCompany(companyId, id))!;
+    Object.assign(user, data);
+    return user;
+  }
+  async deactivate(companyId: number, id: number) {
+    const user = (await this.findInCompany(companyId, id))!;
+    user.status = UserStatus.Inactive;
+    return user;
+  }
+}
+
+/** In-memory transfer repository. */
+export class InMemoryTransferRepository implements TransferRepositoryContract {
+  readonly rows: DepartmentTransfer[] = [];
+  constructor(
+    private readonly users: InMemoryUserRepository,
+    private readonly departments: InMemoryDepartmentRepository,
+  ) {}
+
+  private withContext(t: DepartmentTransfer): TransferWithContext {
+    const person = this.users.rows.find((u) => u.id === t.userId)!;
+    const pick = (id: number) => {
+      const d = this.departments.rows.find((x) => x.id === id)!;
+      return { id: d.id, name: d.name, organizationId: d.organizationId, headUserId: d.headUserId };
+    };
+    return { ...t, user: { id: person.id, name: person.name, email: person.email }, fromDepartment: pick(t.fromDepartmentId), toDepartment: pick(t.toDepartmentId) };
+  }
+  async create(data: Prisma.DepartmentTransferUncheckedCreateInput) {
+    const row: DepartmentTransfer = {
+      id: this.rows.length + 1,
+      status: 'Pending',
+      fromHeadApprovedAt: null,
+      toHeadApprovedAt: null,
+      companyHeadApprovedAt: null,
+      decidedBy: null,
+      decisionNote: null,
+      createdAt: new Date(),
+      completedAt: null,
+      ...(data as Partial<DepartmentTransfer>),
+    } as DepartmentTransfer;
+    this.rows.push(row);
+    return row;
+  }
+  async findById(companyId: number, id: number) {
+    const row = this.rows.find((t) => t.id === id && t.companyId === companyId);
+    return row ? this.withContext(row) : null;
+  }
+  async list(companyId: number, filter: { status?: DepartmentTransfer['status']; departmentIds?: number[] }) {
+    return this.rows
+      .filter((t) => t.companyId === companyId)
+      .filter((t) => !filter.status || t.status === filter.status)
+      .filter((t) => !filter.departmentIds || filter.departmentIds.includes(t.fromDepartmentId) || filter.departmentIds.includes(t.toDepartmentId))
+      .map((t) => this.withContext(t))
+      .reverse();
+  }
+  async findPendingForUser(companyId: number, userId: number) {
+    return this.rows.find((t) => t.companyId === companyId && t.userId === userId && t.status === 'Pending') ?? null;
+  }
+  async update(companyId: number, id: number, data: Prisma.DepartmentTransferUncheckedUpdateInput) {
+    const row = this.rows.find((t) => t.id === id && t.companyId === companyId)!;
+    Object.assign(row, data);
+    return row;
+  }
+  async complete(companyId: number, id: number, data: Prisma.DepartmentTransferUncheckedUpdateInput, userId: number, toDepartmentId: number) {
+    await this.update(companyId, id, { ...data, status: 'Completed', completedAt: new Date() });
+    this.users.rows.find((u) => u.id === userId)!.departmentId = toDepartmentId;
+  }
+}
+
 /** Fake email sender that remembers what was sent. */
 export interface SentEmail extends SendEmailInput {}
 export function createEmailFake() {
@@ -397,6 +508,9 @@ export function createWorld() {
   const departments = new InMemoryDepartmentRepository(base.users);
   const organizations = new InMemoryOrganizationRepository(departments);
   const invitationRepo = new InMemoryInvitationRepository(base.users, companies, departments);
+  departments.orgs = () => organizations.rows;
+  const peopleRepo = new InMemoryPeopleRepository(base.users);
+  const transferRepo = new InMemoryTransferRepository(base.users, departments);
 
   const company = new CompanyService({ companies, users: base.users, verificationTokens, audit: base.audit, email: base.email, config: testConfig });
   const structure = new StructureService({ organizations, departments, invitations: invitationRepo, audit: base.audit });
@@ -409,13 +523,31 @@ export function createWorld() {
     auth: base.auth,
     config: testConfig,
   });
+  const people = new PeopleService({
+    people: peopleRepo,
+    departments,
+    invitations: invitationRepo,
+    refreshTokens: base.refreshTokens,
+    openPoints: noPointsYet,
+    audit: base.audit,
+  });
+  const transfers = new TransferService({
+    transfers: transferRepo,
+    people: peopleRepo,
+    departments,
+    openPoints: noPointsYet,
+    audit: base.audit,
+    email: base.email,
+    config: testConfig,
+  });
+  const profile = new ProfileService({ people: peopleRepo, audit: base.audit, config: testConfig });
   const app = createApp({
     config: testConfig,
-    services: { auth: base.auth, jwt: base.jwt, company, structure, invitations },
+    services: { auth: base.auth, jwt: base.jwt, company, structure, invitations, people, transfers, profile },
     users: base.users,
     companies,
     checkDatabase: async () => undefined,
     rateLimiters: noRateLimiters,
   });
-  return { ...base, companies, verificationTokens, departments, organizations, invitationRepo, app };
+  return { ...base, companies, verificationTokens, departments, organizations, invitationRepo, peopleRepo, transferRepo, app };
 }

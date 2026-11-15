@@ -14,7 +14,9 @@ model Department {
   createdBy      Int?
 
   members     User[]       @relation("DepartmentMembers")
-  invitations Invitation[]
+  invitations   Invitation[]
+  transfersFrom DepartmentTransfer[] @relation("TransferFrom")
+  transfersTo   DepartmentTransfer[] @relation("TransferTo")
 
   @@unique([organizationId, code])
   @@index([companyId])

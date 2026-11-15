@@ -45,12 +45,12 @@ export function createStructureController(structure: StructureService, invitatio
 
   /** POST /invitations/:id/resend */
   const resendInvitation: RequestHandler = async (req, res) => {
-    res.status(200).json(await invitations.resend(requireCompany(req), req.user!.id, id(req)));
+    res.status(200).json(await invitations.resend(requireCompany(req), req.user!, id(req)));
   };
 
   /** DELETE /invitations/:id */
   const revokeInvitation: RequestHandler = async (req, res) => {
-    await invitations.revoke(companyId(req), req.user!.id, id(req));
+    await invitations.revoke(companyId(req), req.user!, id(req));
     res.status(204).end();
   };
 

@@ -7,7 +7,10 @@ import { BootstrapService } from './bootstrap.service';
 import { CompanyService } from './company.service';
 import { EmailService } from './email.service';
 import { InvitationService } from './invitation.service';
+import { noPointsYet, PeopleService } from './people.service';
+import { ProfileService } from './profile.service';
 import { StructureService } from './structure.service';
+import { TransferService } from './transfer.service';
 
 export * from './audit.service';
 export * from './auth.service';
@@ -15,7 +18,11 @@ export * from './bootstrap.service';
 export * from './company.service';
 export * from './email.service';
 export * from './invitation.service';
+export * from './people.service';
+export * from './profile.service';
+export * from './rules';
 export * from './structure.service';
+export * from './transfer.service';
 
 /** Wires every service to its repositories and settings (the composition root for business logic). */
 export function createServices(repos: Repositories, config: AppConfig) {
@@ -47,7 +54,25 @@ export function createServices(repos: Repositories, config: AppConfig) {
     auth,
     config,
   });
-  return { jwt, audit, email, auth, bootstrap, company, structure, invitations };
+  const people = new PeopleService({
+    people: repos.people,
+    departments: repos.departments,
+    invitations: repos.invitations,
+    refreshTokens: repos.refreshTokens,
+    openPoints: noPointsYet,
+    audit,
+  });
+  const transfers = new TransferService({
+    transfers: repos.transfers,
+    people: repos.people,
+    departments: repos.departments,
+    openPoints: noPointsYet,
+    audit,
+    email,
+    config,
+  });
+  const profile = new ProfileService({ people: repos.people, audit, config });
+  return { jwt, audit, email, auth, bootstrap, company, structure, invitations, people, transfers, profile };
 }
 
 export type Services = ReturnType<typeof createServices>;

@@ -25,6 +25,10 @@ model User {
   systemRole         SystemRole
   status             UserStatus  @default(Active)
   jobTitle           String?
+  phone              String?
+  /// profile photo in the image service (folder quorum/<slug>/avatars)
+  avatarUrl          String?
+  avatarPublicId     String?
   mustChangePassword Boolean     @default(false)
   emailVerifiedAt    DateTime?
   failedLoginCount   Int         @default(0)
@@ -35,6 +39,7 @@ model User {
   refreshTokens      RefreshToken[]
   verificationTokens EmailVerificationToken[]
   headOf             Department[]             @relation("DepartmentHead")
+  transfers          DepartmentTransfer[]     @relation("TransferPerson")
 
   @@unique([companyId, email])
   @@index([departmentId])
