@@ -1,0 +1,13 @@
+model EmailLog {
+  id             Int      @id @default(autoincrement())
+  organizationId Int?
+  userId         Int?
+  toEmail        String
+  type           String
+  subject        String
+  status         String
+  error          String?
+  sentAt         DateTime @default(now())
+
+  @@index([organizationId])
+}

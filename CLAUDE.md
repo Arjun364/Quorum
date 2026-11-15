@@ -46,6 +46,16 @@ TypeScript (backend and frontend):
 14. Every create, update, approval, reopen, transfer and role change writes an `AuditLog` row.
 15. Transferring or removing a user requires reassigning their open points first.
 
+## Frontend structure (mandatory)
+Follow `docs/FRONTEND_PATTERN.md` for every frontend change: feature-based folders (`api/ components/ constants/ hooks/ pages/ types/ utils/` + `index.ts` barrels), shared code in `src/shared/` with the same structure, one orchestration hook per page, only page hooks call the feature API module, JSDoc on every component and function, imports through barrels using the `@/` alias.
+
+## Database and migrations (mandatory)
+- **One Prisma file per model** in `backend/prisma/schema/` (enums live with the model that owns them; `base.prisma` holds only the generator and datasource). Configuration is in `backend/prisma.config.ts`.
+- **Every schema change gets a migration**: `npm run prisma:migrate -- --name <what_changed>` (name describes the change, for example `add_meeting_tables`). The SQL files in `backend/prisma/migrations/` are **committed to git** together with the code that needs them. The database records every applied migration in its `_prisma_migrations` table (name, checksum, timestamps); `npx prisma migrate status` shows what is applied and what is pending.
+- **Never edit or delete a migration that has been merged or applied anywhere.** Fix mistakes with a new migration.
+- **Production and shared databases** only ever run `npm run prisma:deploy` (applies pending migrations, never generates or resets).
+- **Teams:** each developer uses their own local database. Two people changing the schema on different branches produce two migrations; after merging, the later branch re-syncs (`git pull`, then `prisma migrate dev`) and, if both touch the same table, resolves the conflict in a new migration. Review migration SQL in every pull request.
+
 ## UI standards
 Installed project skills (in `.claude/skills/`): `design-taste-frontend` (Taste Skill), `web-design-guidelines` (Vercel), `playwright-cli`. Reference: `docs/design/REFERENCE-warm-editorial.md` (Awesome Design; structure only, never copy another brand's identity).
 - **Before building any screen:** follow `design-taste-frontend` for hierarchy, copy and finish, in its app/dashboard mode. It is written for marketing sites, so ignore its photo and hero-moment rules inside the app. Our tokens in `frontend/src/design/tokens.css` win over any palette it proposes.

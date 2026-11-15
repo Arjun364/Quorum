@@ -1,0 +1,12 @@
+// Prisma schema folder: this file holds only the generator and datasource.
+// Every model (and the enums it owns) lives in its own file in this folder.
+// Migrations are generated into ../migrations and committed with the code.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

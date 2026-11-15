@@ -1,0 +1,16 @@
+model Department {
+  id             Int          @id @default(autoincrement())
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name           String
+  code           String
+  headUserId     Int?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  createdBy      Int?
+
+  users User[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}

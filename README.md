@@ -48,8 +48,8 @@ cd frontend && npm run lint && npm run build
 ```
 
 ## Layout
-- `backend/`: NestJS API (modules, pure rule classes in `src/rules/`, Prisma schema)
-- `frontend/`: React app (feature folders, design tokens in `src/design/`)
+- `backend/`: API (pure rule classes, Prisma schema with one file per model in `prisma/schema/`, migrations in `prisma/migrations/`)
+- `frontend/`: React app, feature-based (`src/features/<name>/{api,components,constants,hooks,pages,types,utils}`, shared code in `src/shared/`, design tokens in `src/design/`); see [docs/FRONTEND_PATTERN.md](docs/FRONTEND_PATTERN.md)
 - `docs/`: specification
 - `docker-compose.yml`: local PostgreSQL and Mailpit
 

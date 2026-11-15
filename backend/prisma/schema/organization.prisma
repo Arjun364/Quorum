@@ -1,0 +1,21 @@
+/// A company (tenant) using the platform. Every tenant-owned row points back here.
+enum MeetingLanguage {
+  Malayalam
+  English
+  Mixed
+}
+
+model Organization {
+  id              Int             @id @default(autoincrement())
+  name            String
+  slug            String          @unique
+  meetingLanguage MeetingLanguage @default(English)
+  timeZone        String          @default("Asia/Kolkata")
+  /// ISO weekdays 1 (Mon) .. 7 (Sun)
+  workingDays     Int[]           @default([1, 2, 3, 4, 5])
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+
+  departments Department[]
+  users       User[]
+}

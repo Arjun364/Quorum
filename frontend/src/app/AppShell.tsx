@@ -1,10 +1,12 @@
+import { useSession, useSignOut } from '@/features/auth';
+import { Button, Logo } from '@/shared';
 import { Outlet } from 'react-router-dom';
-import { Button } from '../components/Button';
-import { Logo } from '../components/Logo';
-import { signOut, useSession } from './auth/session';
 
+/** Layout of every signed-in page: skip link, header with the account and sign-out, and the page outlet. */
 export function AppShell() {
   const { user } = useSession();
+  const { signOut } = useSignOut();
+
   return (
     <div className="min-h-dvh">
       <a
