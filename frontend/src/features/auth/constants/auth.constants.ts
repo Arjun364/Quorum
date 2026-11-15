@@ -3,7 +3,6 @@ import type { LoginPreviewRow, SystemRole } from '../types';
 /** Human-readable role names shown in the interface. */
 export const ROLE_LABELS: Record<SystemRole, string> = {
   PlatformOwner: 'Platform Owner',
-  Admin: 'Administrator',
   CompanyHead: 'Company Head',
   DepartmentHead: 'Department Head',
   Employee: 'Employee',

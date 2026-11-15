@@ -1,5 +1,6 @@
 import type { FormEvent, RefObject } from 'react';
-import type { ChangePasswordFieldErrors, LoginFieldErrors, PasswordRule } from './auth.types';
+import type { PasswordRule } from '@/shared';
+import type { ChangePasswordFieldErrors, LoginFieldErrors } from './auth.types';
 
 /** Props of the sign-in form. */
 export interface LoginFormProps {
@@ -8,12 +9,18 @@ export interface LoginFormProps {
   errors: LoginFieldErrors;
   formError: string | null;
   isSubmitting: boolean;
+  /** True when the account exists but its email is not verified yet. */
+  needsVerification: boolean;
+  resendStatus: 'idle' | 'sending' | 'sent';
+  onResend: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
 
-/** Props of the checklist of password requirements. */
-export interface PasswordRequirementsProps {
-  rules: PasswordRule[];
+/** Props of the company brand panel of the sign-in page. */
+export interface LoginHeroProps {
+  companyName: string;
+  logoUrl: string | null;
+  showPoweredBy: boolean;
 }
 
 /** Props of the change-password form. */

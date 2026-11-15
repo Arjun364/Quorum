@@ -27,10 +27,17 @@ export interface SessionUser {
   name: string;
   email: string;
   systemRole: SystemRole;
-  organizationId: number | null;
+  companyId: number | null;
   departmentId: number | null;
+  jobTitle: string | null;
   mustChangePassword: boolean;
 }
 
+/** One password requirement and whether the typed password meets it. */
+export interface PasswordRule {
+  label: string;
+  met: boolean;
+}
+
 /** Roles stored on the user; the note-taker is per meeting and is not a role. */
-export type SystemRole = 'PlatformOwner' | 'Admin' | 'CompanyHead' | 'DepartmentHead' | 'Employee';
+export type SystemRole = 'PlatformOwner' | 'CompanyHead' | 'DepartmentHead' | 'Employee';

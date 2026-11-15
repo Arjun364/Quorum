@@ -1,5 +1,5 @@
 import { apiFetch } from '@/shared';
-import type { AuthResponse, ChangePasswordPayload, LoginCredentials, User } from '../types';
+import type { AuthResponse, ChangePasswordPayload, LoginCredentials, User, VerifyEmailResult } from '../types';
 
 export const authApi = {
   /** Signs in with email and password and returns the new session; the refresh cookie is set by the server. */
@@ -20,5 +20,15 @@ export const authApi = {
   /** Fetches the signed-in user's profile. */
   me(): Promise<User> {
     return apiFetch<User>('/auth/me');
+  },
+
+  /** Confirms the emailed verification link of a new company head; the link works once. */
+  verifyEmail(token: string): Promise<VerifyEmailResult> {
+    return apiFetch<VerifyEmailResult>('/auth/verify-email', { method: 'POST', body: { token }, auth: false });
+  },
+
+  /** Asks for a new verification link; the server always answers the same, so it never reveals which emails exist. */
+  resendVerification(email: string): Promise<void> {
+    return apiFetch<void>('/auth/resend-verification', { method: 'POST', body: { email }, auth: false });
   },
 };

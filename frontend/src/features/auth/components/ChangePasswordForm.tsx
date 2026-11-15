@@ -1,6 +1,5 @@
-import { Alert, Button, PasswordField } from '@/shared';
+import { Alert, Button, PasswordField, PasswordRequirements } from '@/shared';
 import type { ChangePasswordFormProps } from '../types';
-import { PasswordRequirements } from './PasswordRequirements';
 
 /** Renders the three password fields and the live requirement checklist; validation belongs to the page hook. */
 export function ChangePasswordForm({

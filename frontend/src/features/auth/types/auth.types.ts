@@ -33,12 +33,6 @@ export interface ChangePasswordFieldErrors {
   confirm?: string;
 }
 
-/** One password requirement and whether the typed password meets it. */
-export interface PasswordRule {
-  label: string;
-  met: boolean;
-}
-
 /** State held by the in-memory session store. */
 export interface SessionState {
   status: 'loading' | 'authenticated' | 'anonymous';
@@ -51,4 +45,9 @@ export interface LoginPreviewRow {
   owner: string;
   state: string;
   tone: 'ok' | 'warn';
+}
+
+/** Answer of a successful email verification. */
+export interface VerifyEmailResult {
+  slug: string;
 }

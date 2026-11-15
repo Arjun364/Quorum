@@ -218,3 +218,9 @@
   /* Frosted sticky header. */
   .glass { backdrop-filter: saturate(160%) blur(12px); background-color: color-mix(in srgb, var(--surface) 78%, transparent); }
 }
+
+@layer components {
+  .dialog::backdrop { background: rgb(20 20 18 / 0.45); }
+  .dialog[open] { animation: enter 320ms var(--ease-out) both; }
+}
+

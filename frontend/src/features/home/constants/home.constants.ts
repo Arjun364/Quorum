@@ -4,12 +4,8 @@ import type { EmptyStateCopy } from '../types';
 /** Empty-state copy per role until real "waiting for me" items exist (later milestones). */
 export const EMPTY_STATE_COPY: Record<SystemRole, EmptyStateCopy> = {
   PlatformOwner: {
-    title: 'No organizations yet',
-    body: 'Creating organizations and their administrators arrives in the next milestone.',
-  },
-  Admin: {
     title: 'Nothing is waiting for you',
-    body: 'Departments, people and join requests will appear here once they exist.',
+    body: 'Companies and support requests will appear here when the platform panel arrives.',
   },
   CompanyHead: {
     title: 'Nothing is waiting for you',

@@ -1,4 +1,10 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, Ref } from 'react';
+import type { PasswordRule } from './api.types';
+
+/** Props of the checklist of password requirements. */
+export interface PasswordRequirementsProps {
+  rules: PasswordRule[];
+}
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -27,6 +33,15 @@ export type AlertTone = 'error' | 'info';
 /** Props of the shared inline message. */
 export interface AlertProps {
   tone?: AlertTone;
+  children: ReactNode;
+}
+
+/** Props of the modal dialog. */
+export interface DialogProps {
+  open: boolean;
+  title: string;
+  description?: string;
+  onClose: () => void;
   children: ReactNode;
 }
 

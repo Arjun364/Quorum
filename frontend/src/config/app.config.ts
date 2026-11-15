@@ -6,3 +6,6 @@ export const SESSION_RENEW_MARGIN_SECONDS = 30;
 
 /** Shortest delay, in seconds, between two silent session renewals. */
 export const SESSION_RENEW_MIN_SECONDS = 5;
+
+/** Host name companies hang their address on: "quorum.app" in production, "localhost" in development. */
+export const ROOT_HOST: string = (import.meta.env.VITE_ROOT_HOST as string | undefined) ?? 'localhost';

@@ -1,4 +1,4 @@
-import type { EmptyStateCopy } from './home.types';
+import type { EmptyStateCopy, SetupStep } from './home.types';
 
 /** Props of the greeting at the top of the home page. */
 export interface WelcomeHeaderProps {
@@ -9,4 +9,9 @@ export interface WelcomeHeaderProps {
 /** Props of the "Waiting for You" section. */
 export interface WaitingForYouProps {
   emptyState: EmptyStateCopy;
+}
+
+/** Props of the company head's setup checklist. */
+export interface SetupChecklistProps {
+  steps: SetupStep[];
 }
