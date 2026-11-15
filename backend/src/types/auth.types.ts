@@ -3,7 +3,7 @@ import type { SystemRole, User } from '@prisma/client';
 /** The signed-in user, loaded fresh from the database on every request. */
 export interface AuthUser {
   id: number;
-  organizationId: number | null;
+  companyId: number | null;
   departmentId: number | null;
   systemRole: SystemRole;
   mustChangePassword: boolean;
@@ -15,8 +15,9 @@ export interface UserResponse {
   name: string;
   email: string;
   systemRole: SystemRole;
-  organizationId: number | null;
+  companyId: number | null;
   departmentId: number | null;
+  jobTitle: string | null;
   mustChangePassword: boolean;
 }
 
@@ -40,8 +41,9 @@ export function toUserResponse(user: User): UserResponse {
     name: user.name,
     email: user.email,
     systemRole: user.systemRole,
-    organizationId: user.organizationId,
+    companyId: user.companyId,
     departmentId: user.departmentId,
+    jobTitle: user.jobTitle,
     mustChangePassword: user.mustChangePassword,
   };
 }

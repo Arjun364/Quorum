@@ -1,27 +1,43 @@
 import { Router } from 'express';
 import type { AppConfig } from '../config';
-import { createAuthController, createHealthController } from '../controllers';
-import { createAuthenticate, type RateLimiters } from '../middlewares';
+import {
+  createAuthController,
+  createCompanyController,
+  createHealthController,
+  createInvitationController,
+  createStructureController,
+} from '../controllers';
+import { createAuthenticate, createResolveCompany, type RateLimiters } from '../middlewares';
 import type { Services } from '../services';
-import type { UserRepositoryContract } from '../types';
+import type { CompanyRepositoryContract, UserRepositoryContract } from '../types';
 import { createAuthRouter } from './auth.routes';
+import { createCompanyHeadRouter, createInvitationRouter, createPublicCompanyRouter } from './company.routes';
 import { createHealthRouter } from './health.routes';
 
 /** Everything the HTTP layer needs; built once at startup (or by tests with fakes). */
 export interface AppDependencies {
   config: AppConfig;
-  services: Pick<Services, 'auth' | 'jwt'>;
+  services: Pick<Services, 'auth' | 'jwt' | 'company' | 'structure' | 'invitations'>;
   users: UserRepositoryContract;
+  companies: CompanyRepositoryContract;
   checkDatabase: () => Promise<void>;
   rateLimiters: RateLimiters;
 }
 
-/** Builds the /api router: public health check, then everything else behind the general rate limit. */
+/** Builds the /api router: public health check, then the company is resolved from the address, then everything else. */
 export function createApiRouter(deps: AppDependencies): Router {
   const authenticate = createAuthenticate({ users: deps.users, jwt: deps.services.jwt });
+  const company = createCompanyController(deps.services.company, deps.services.auth);
+  const structure = createStructureController(deps.services.structure, deps.services.invitations);
+  const invitations = createInvitationController(deps.services.invitations, deps.config);
+
   const router = Router();
   router.use('/health', createHealthRouter(createHealthController(deps.checkDatabase)));
   router.use(deps.rateLimiters.general);
-  router.use('/auth', createAuthRouter(createAuthController(deps.services.auth, deps.config), authenticate, deps.rateLimiters));
+  router.use(createResolveCompany({ companies: deps.companies, rootHost: deps.config.appRootHost }));
+  router.use(createPublicCompanyRouter(company, deps.rateLimiters));
+  router.use(createInvitationRouter(invitations, deps.rateLimiters));
+  router.use('/auth', createAuthRouter(createAuthController(deps.services.auth, deps.services.company, deps.config), authenticate, deps.rateLimiters));
+  router.use(createCompanyHeadRouter(company, structure, authenticate));
   return router;
 }

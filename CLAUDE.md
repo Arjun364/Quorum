@@ -3,7 +3,7 @@
 Read this file first, then `docs/PROJECT_SPEC.md` (v7), the full specification. Follow it exactly. If something is unclear or missing, ask me before guessing, and add the decision to section 18 of the spec.
 
 ## What this is
-A multi-tenant service where organizations run their monthly department meeting: the dept head starts the meeting, a randomly drawn note-taker (plus the head's own notes, later AI drafts) compiles the minutes, each named owner confirms their own points, the dept head approves last, and unfinished points carry over automatically. It replaces an Excel sheet of minutes.
+A multi-tenant service where companies run their monthly department meeting: the dept head starts the meeting, a randomly drawn note-taker (plus the head's own notes, later AI drafts) compiles the minutes, each named owner confirms their own points, the dept head approves last, and unfinished points carry over automatically. It replaces an Excel sheet of minutes.
 
 It is **not a task manager.** Daily tasks are in Zoho Projects. Never add subtasks, hours, Kanban or anything that makes users enter the same thing twice. **There is no project list:** a project is a project tag typed on a point.
 
@@ -33,16 +33,15 @@ TypeScript (backend and frontend):
 - File names: `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, `<name>.routes.ts`, `<name>.validator.ts`, `<name>.middleware.ts`. Request bodies are validated with zod schemas; response shapes are typed (`...Response`).
 - `async`/`await` throughout (Express 5 forwards rejected promises to the error handler, so no try/catch wrappers in controllers). **Never return Prisma models from controllers**; map them to response types.
 - Errors: throw `HttpError` helpers (`badRequest`, `unauthorized`, `forbidden`, ...); the error middleware turns everything into problem-details.
-- Prisma: a migration for every schema change; enums stored as strings; all times UTC; every table has `organizationId`.
+- Prisma: a migration for every schema change; enums stored as strings; all times UTC; every tenant table has `companyId`.
 - Errors go through the global filter in a consistent problem-details shape. No magic strings; use enums and constants.
 - Server state with TanStack Query. The access token lives in memory only, never localStorage. The UI hides things but the **server enforces permissions**.
 
 ## Rules you must never break
 1. **No hard-coded users or credentials.** The first account is the platform owner, created only when no users exist, from `BOOTSTRAP_OWNER_EMAIL` and `BOOTSTRAP_OWNER_PASSWORD`, with `mustChangePassword = true`.
-2. **Tenant isolation.** Every table has `organizationId`; every query is filtered centrally by the signed-in user's organization. A cross-organization read must be impossible and covered by tests.
-3. Roles on the user: `PlatformOwner`, `Admin`, `CompanyHead`, `DepartmentHead`, `Employee`. There is **no** Project Manager role. The **note-taker is temporary and per meeting**, from `Meeting.noteTakerUserId` while status is `InProgress`, `Compiling` or `Confirming`.
-4. **Only the note-taker compiles and edits the final points.** During InProgress the **dept head may also add head notes**. Admin can reassign a note-taker but never edits minutes. The head's notes and AI drafts become official only when the note-taker accepts them.
-5. The dept head, the previous meeting's note-taker, absent people and guests are **never** drawn as note-taker. A meeting needs **at least 3 department members present** including the head.
+2. **Tenant isolation.** The tenant is the **Company** (reached at `<slug>.<root domain>`). Every tenant table has `companyId`; every repository query takes the company id explicitly and the tests prove another company's ids look like "not found". A session token only works on its own company's address.
+3. **Hierarchy:** Company, then Organization (a unit, managed by the company head), then Department, then people. Roles on the user: `PlatformOwner` (the platform's owner, no company), `CompanyHead` (one per company, registers it, manages brand, organizations, departments and invites department heads; read-only on minutes), `DepartmentHead`, `Employee`. There is **no** Admin, **no** Project Manager role. The **note-taker is temporary and per meeting**, from `Meeting.noteTakerUserId` while status is `InProgress`, `Compiling` or `Confirming`.
+4. **Only the note-taker compiles and edits the final points.** During InProgress the **dept head may also add head notes**. The company head can reassign a note-taker but never edits minutes. The head's notes and AI drafts become official only when the note-taker accepts them.5. The dept head, the previous meeting's note-taker, absent people and guests are **never** drawn as note-taker. A meeting needs **at least 3 department members present** including the head.
 6. **Status of a point changes only through a meeting's minutes.** Employees never change status; they confirm or comment.
 7. **Every edit creates a new version** (`PointUpdate`). Never overwrite history.
 8. After an edit, only the **affected owners** are asked to confirm again.
@@ -91,4 +90,11 @@ Installed project skills (in `.claude/skills/`): `design-taste-frontend` (Taste 
 Daily tasks, subtasks, time tracking, Kanban, Zoho sync, email replies, one-click approvals from email, scheduling/booking, billing, Excel import (on hold), and AI recording (until M9).
 
 ## Start here
-Begin with **M0 Foundation** (spec section 14): repo structure, Docker Compose, Prisma and PostgreSQL, organization layer, bootstrap platform owner, auth, email with Mailpit, error filter, health endpoint, and the design system. Stop after M0 and show me how to run it.
+Begin with **M0 Foundation** (spec section 14): repo structure, Docker Compose, Prisma and PostgreSQL, company layer, bootstrap platform owner, auth, email with Mailpit, error filter, health endpoint, and the design system. Stop after M0 and show me how to run it.
+
+## Accounts, invitations and branding (M1a)
+- A company is registered publicly by its head (`POST /api/companies/signup`); it stays `PendingVerification` and cannot sign in until the emailed single-use link is used. Email is unique **within a company**, so the same person can exist in two companies.
+- **Invitations are tied to one email address**, single-use, expire in 7 days, and the invited person sets their own password. No temporary passwords, no join links, no approval queue. Invitation and verification tokens are stored as SHA-256 hashes only.
+- The company is resolved from the request's host (`parseCompanySlug`); the unknown subdomain is a 404 and the platform's own address means "no company". In development use `<slug>.localhost:5173`.
+- Brand: three presets plus a custom accent that must reach 3:1 contrast on the page background. Logos upload straight to Cloudinary with a server-signed request into `quorum/<slug>/logo`; the server accepts a saved image only if it sits in that folder. Never commit the Cloudinary keys (`CLOUDINARY_*` stay in `.env`).
+- Prisma quirk: a diff-generated migration can alter an enum on a table that is created later in the same file. Check generated SQL before applying, write migration files without a byte-order mark, and never run `prisma migrate reset` without the user's explicit consent.

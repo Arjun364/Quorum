@@ -1,3 +1,4 @@
+export * from './cloudinary.helper';
 export * from './cookie.helper';
 export * from './email-template';
 export * from './jwt.helper';

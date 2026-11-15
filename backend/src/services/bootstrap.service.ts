@@ -41,6 +41,7 @@ export class BootstrapService {
       systemRole: SystemRole.PlatformOwner,
       status: UserStatus.Active,
       mustChangePassword: true,
+      emailVerifiedAt: new Date(),
     });
     await this.audit.log({
       userId: owner.id,

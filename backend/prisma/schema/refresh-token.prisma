@@ -1,13 +1,13 @@
 model RefreshToken {
-  id             Int       @id @default(autoincrement())
-  organizationId Int?
-  userId         Int
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int       @id @default(autoincrement())
+  companyId Int?
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// SHA-256 of the token; the token itself is never stored
-  tokenHash      String    @unique
-  expiresAt      DateTime
-  revokedAt      DateTime?
-  createdAt      DateTime  @default(now())
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
 
   @@index([userId])
 }

@@ -1,4 +1,4 @@
-import { createTransport, type Transporter } from 'nodemailer';
+﻿import { createTransport, type Transporter } from 'nodemailer';
 import type { AppConfig } from '../config';
 import { renderEmail, type EmailContent } from '../helpers';
 import type { EmailLogRepositoryContract } from '../types';
@@ -12,7 +12,7 @@ export interface SendEmailInput extends EmailContent {
   subject: string;
   type: string;
   userId?: number;
-  organizationId?: number | null;
+  companyId?: number | null;
 }
 
 /** What other services need from the email service (lets tests substitute a fake). */
@@ -53,7 +53,7 @@ export class EmailService implements EmailSender {
     }
     try {
       await this.emailLogs.create({
-        organizationId: input.organizationId ?? null,
+        companyId: input.companyId ?? null,
         userId: input.userId ?? null,
         toEmail: input.to,
         type: input.type,

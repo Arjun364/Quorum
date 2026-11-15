@@ -1,4 +1,4 @@
-import type { PrismaClient, RefreshToken } from '@prisma/client';
+﻿import type { PrismaClient, RefreshToken } from '@prisma/client';
 import type { RefreshTokenRepositoryContract, RefreshTokenWithUser } from '../types';
 
 /** Stores refresh-token hashes and their revocation state. */
@@ -7,7 +7,7 @@ export class RefreshTokenRepository implements RefreshTokenRepositoryContract {
 
   /** Stores the hash of a newly issued refresh token. */
   create(data: {
-    organizationId: number | null;
+    companyId: number | null;
     userId: number;
     tokenHash: string;
     expiresAt: Date;

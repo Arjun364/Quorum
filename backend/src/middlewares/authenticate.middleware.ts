@@ -30,18 +30,23 @@ export function createAuthenticate(deps: { users: UserRepositoryContract; jwt: J
       const user = await deps.users.findAuthById(userId);
       if (!user || user.status !== UserStatus.Active) throw unauthorized('Account is not active');
 
+      // A token is only valid on its own company's address (or the platform's, for the platform owner).
+      if (req.company !== undefined && (req.company?.id ?? null) !== user.companyId) {
+        throw unauthorized('This session belongs to a different address');
+      }
+
       if (user.mustChangePassword && !options.allowPasswordChangeRequired) {
         throw forbidden('You must change your password before continuing', PASSWORD_CHANGE_REQUIRED_CODE);
       }
 
       req.user = {
         id: user.id,
-        organizationId: user.organizationId,
+        companyId: user.companyId,
         departmentId: user.departmentId,
         systemRole: user.systemRole,
         mustChangePassword: user.mustChangePassword,
       };
-      tenantStorage.run({ organizationId: user.organizationId }, () => next());
+      tenantStorage.run({ companyId: user.companyId }, () => next());
     };
 }
 

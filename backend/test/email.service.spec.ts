@@ -1,4 +1,4 @@
-import type { Transporter } from 'nodemailer';
+﻿import type { Transporter } from 'nodemailer';
 import { describe, expect, it, vi } from 'vitest';
 import { renderEmail } from '../src/helpers';
 import { EmailService } from '../src/services';
@@ -10,14 +10,14 @@ function setup(sendMail: () => Promise<unknown>) {
   return { service: new EmailService(testConfig, { create }, transport), create, transport };
 }
 
-const input = { to: 'a@example.com', subject: 'S', heading: 'H', body: 'B', type: 'Test', userId: 1, organizationId: 2 };
+const input = { to: 'a@example.com', subject: 'S', heading: 'H', body: 'B', type: 'Test', userId: 1, companyId: 2 };
 
 describe('EmailService', () => {
   it('sends and logs a successful email', async () => {
     const { service, create, transport } = setup(async () => ({}));
     expect(await service.send(input)).toBe(true);
     expect(transport.sendMail).toHaveBeenCalledOnce();
-    expect(create.mock.calls[0][0]).toMatchObject({ status: 'Sent', toEmail: 'a@example.com', organizationId: 2 });
+    expect(create.mock.calls[0][0]).toMatchObject({ status: 'Sent', toEmail: 'a@example.com', companyId: 2 });
   });
 
   it('never throws when SMTP fails, and logs the failure', async () => {

@@ -1,21 +1,16 @@
-/// A company (tenant) using the platform. Every tenant-owned row points back here.
-enum MeetingLanguage {
-  Malayalam
-  English
-  Mixed
-}
-
+/// A unit inside a company (a division, branch or business). Managed by the company head.
 model Organization {
-  id              Int             @id @default(autoincrement())
-  name            String
-  slug            String          @unique
-  meetingLanguage MeetingLanguage @default(English)
-  timeZone        String          @default("Asia/Kolkata")
-  /// ISO weekdays 1 (Mon) .. 7 (Sun)
-  workingDays     Int[]           @default([1, 2, 3, 4, 5])
-  isActive        Boolean         @default(true)
-  createdAt       DateTime        @default(now())
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id])
+  name      String
+  code      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  createdBy Int?
 
   departments Department[]
-  users       User[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
 }

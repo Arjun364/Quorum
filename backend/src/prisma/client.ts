@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+﻿import { PrismaClient } from '@prisma/client';
 import { applyTenantScope, tenantStorage } from './tenant-scope';
 
 /** Builds the raw client and the tenant-scoped client that share one connection pool. */
@@ -6,7 +6,7 @@ export function createPrismaClients() {
   /** Raw (unscoped) client. Use ONLY for pre-authentication work (login, refresh, bootstrap) and platform-level tasks. */
   const raw = new PrismaClient();
 
-  /** Client that forces every tenant-model query into the signed-in organization. Feature repositories use this one. */
+  /** Client that forces every tenant-model query into the signed-in company. Feature repositories use this one. */
   const tenant = raw.$extends({
     query: {
       $allModels: {
@@ -15,7 +15,7 @@ export function createPrismaClients() {
             model,
             operation,
             args as Record<string, unknown>,
-            tenantStorage.getStore()?.organizationId,
+            tenantStorage.getStore()?.companyId,
           );
           return query(scoped);
         },

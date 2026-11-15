@@ -17,6 +17,9 @@ export interface AppConfig {
   bootstrapOwnerEmail?: string;
   bootstrapOwnerPassword?: string;
   smtp: { host: string; port: number; user?: string; pass?: string; secure: boolean };
+  /** Host name companies hang their address on ("localhost" in development), taken from APP_BASE_URL. */
+  appRootHost: string;
+  cloudinary: { cloudName?: string; apiKey?: string; apiSecret?: string };
   mailFrom: string;
 }
 
@@ -59,5 +62,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       secure: env.SMTP_SECURE === 'true',
     },
     mailFrom: env.MAIL_FROM ?? 'Quorum <no-reply@localhost>',
+    appRootHost: new URL(env.APP_BASE_URL ?? 'http://localhost:5173').hostname,
+    cloudinary: {
+      cloudName: env.CLOUDINARY_CLOUD_NAME || undefined,
+      apiKey: env.CLOUDINARY_API_KEY || undefined,
+      apiSecret: env.CLOUDINARY_API_SECRET || undefined,
+    },
   };
 }

@@ -1,6 +1,6 @@
 import { UserStatus, type User } from '@prisma/client';
 import type { AppConfig } from '../config';
-import { INVALID_LOGIN_MESSAGE, LOCKOUT_MINUTES, MAX_FAILED_LOGINS } from '../constants';
+import { EMAIL_NOT_VERIFIED_CODE, INVALID_LOGIN_MESSAGE, LOCKOUT_MINUTES, MAX_FAILED_LOGINS } from '../constants';
 import {
   DUMMY_PASSWORD_HASH,
   generateRefreshToken,
@@ -16,7 +16,7 @@ import {
   type UserRepositoryContract,
   type UserResponse,
 } from '../types';
-import { badRequest, checkPasswordPolicy, unauthorized } from '../utils';
+import { badRequest, checkPasswordPolicy, forbidden, unauthorized } from '../utils';
 import type { AuditService } from './audit.service';
 import type { EmailSender } from './email.service';
 
@@ -34,10 +34,13 @@ export interface AuthServiceDeps {
 export class AuthService {
   constructor(private readonly deps: AuthServiceDeps) {}
 
-  /** Signs a user in; every failure returns the same generic error, and repeated failures lock the account. */
-  async login(emailInput: string, password: string): Promise<IssuedSession> {
+  /**
+   * Signs a user in on one company's address (null: the platform's own address, for the platform owner).
+   * Every credential failure returns the same generic error, and repeated failures lock the account.
+   */
+  async login(companyId: number | null, emailInput: string, password: string): Promise<IssuedSession> {
     const { users, audit } = this.deps;
-    const user = await users.findByEmail(emailInput.trim().toLowerCase());
+    const user = await users.findByEmail(companyId, emailInput.trim().toLowerCase());
     const now = new Date();
 
     if (!user) {
@@ -60,7 +63,7 @@ export class AuthService {
         if (lock) {
           await audit.log({
             userId: user.id,
-            organizationId: user.organizationId,
+            companyId: user.companyId,
             action: 'AccountLocked',
             entityType: 'User',
             entityId: user.id,
@@ -70,12 +73,15 @@ export class AuthService {
       throw unauthorized(INVALID_LOGIN_MESSAGE);
     }
 
+    if (user.companyId !== null && !user.emailVerifiedAt) {
+      throw forbidden('Verify your email address before signing in. Check your inbox for the link.', EMAIL_NOT_VERIFIED_CODE);
+    }
     if (user.failedLoginCount > 0 || user.lockedUntil) {
       await users.update(user.id, { failedLoginCount: 0, lockedUntil: null });
     }
     await audit.log({
       userId: user.id,
-      organizationId: user.organizationId,
+      companyId: user.companyId,
       action: 'Login',
       entityType: 'User',
       entityId: user.id,
@@ -135,7 +141,7 @@ export class AuthService {
     await this.deps.refreshTokens.revokeAllActiveForUser(userId);
     await audit.log({
       userId,
-      organizationId: user.organizationId,
+      companyId: user.companyId,
       action: 'PasswordChanged',
       entityType: 'User',
       entityId: userId,
@@ -149,7 +155,7 @@ export class AuthService {
       link: { url: `${config.appBaseUrl}/login`, label: 'Open the app' },
       type: 'PasswordChanged',
       userId,
-      organizationId: user.organizationId,
+      companyId: user.companyId,
     });
     return this.issueSession(updated);
   }
@@ -162,13 +168,13 @@ export class AuthService {
   }
 
   /** Creates a new access token and stores a new refresh token (hash only) for the user. */
-  private async issueSession(user: User): Promise<IssuedSession> {
+  async issueSession(user: User): Promise<IssuedSession> {
     const { jwt, refreshTokens, config } = this.deps;
     const { token: accessToken, expiresInSeconds } = jwt.sign(user.id);
     const refreshToken = generateRefreshToken();
     const refreshExpiresAt = new Date(Date.now() + config.refreshTtlDays * 86_400_000);
     await refreshTokens.create({
-      organizationId: user.organizationId,
+      companyId: user.companyId,
       userId: user.id,
       tokenHash: hashToken(refreshToken),
       expiresAt: refreshExpiresAt,

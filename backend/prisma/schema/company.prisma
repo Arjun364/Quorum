@@ -1,0 +1,43 @@
+/// The tenant: one company, registered by its company head, reached at <slug>.<root domain>.
+enum MeetingLanguage {
+  Malayalam
+  English
+  Mixed
+}
+
+enum CompanyStatus {
+  PendingVerification
+  Active
+  Disabled
+}
+
+enum ThemePreset {
+  Forest
+  Ocean
+  Graphite
+  Custom
+}
+
+model Company {
+  id              Int             @id @default(autoincrement())
+  name            String
+  /// the subdomain; lowercase letters, digits and hyphens; never changes
+  slug            String          @unique
+  status          CompanyStatus   @default(PendingVerification)
+  meetingLanguage MeetingLanguage @default(English)
+  timeZone        String          @default("Asia/Kolkata")
+  /// ISO weekdays 1 (Mon) .. 7 (Sun)
+  workingDays     Int[]           @default([1, 2, 3, 4, 5])
+  themePreset     ThemePreset     @default(Forest)
+  /// "#rrggbb"; used when themePreset is Custom
+  accentColor     String?
+  logoUrl         String?
+  logoPublicId    String?
+  showPoweredBy   Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+
+  organizations Organization[]
+  departments   Department[]
+  users         User[]
+  invitations   Invitation[]
+}

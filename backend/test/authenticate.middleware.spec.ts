@@ -15,7 +15,7 @@ async function run(options: { authorization?: string; user?: Partial<ReturnType<
   const req = { headers: { authorization: options.authorization } } as unknown as Request;
   let tenantOrgInsideNext: number | null | undefined;
   const next = vi.fn(() => {
-    tenantOrgInsideNext = tenantStorage.getStore()?.organizationId;
+    tenantOrgInsideNext = tenantStorage.getStore()?.companyId;
   }) as unknown as NextFunction;
   let error: unknown;
   try {
@@ -60,9 +60,9 @@ describe('authenticate middleware', () => {
   it('attaches the user read from the database (not from the token) and runs the request in that tenant', async () => {
     const { req, tenantOrgInsideNext } = await run({
       authorization: bearerFor(1),
-      user: { organizationId: 5, systemRole: SystemRole.Admin },
+      user: { companyId: 5, systemRole: SystemRole.CompanyHead },
     });
-    expect(req.user).toMatchObject({ id: 1, organizationId: 5, systemRole: SystemRole.Admin });
+    expect(req.user).toMatchObject({ id: 1, companyId: 5, systemRole: SystemRole.CompanyHead });
     expect(tenantOrgInsideNext).toBe(5);
   });
 });

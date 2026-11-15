@@ -20,6 +20,7 @@ export function createRateLimiters() {
     login: limiter(10),
     refresh: limiter(30),
     changePassword: limiter(10),
+    signup: limiter(10),
   };
 }
 
@@ -31,4 +32,5 @@ export const noRateLimiters: RateLimiters = {
   login: (_req, _res, next) => next(),
   refresh: (_req, _res, next) => next(),
   changePassword: (_req, _res, next) => next(),
+  signup: (_req, _res, next) => next(),
 };

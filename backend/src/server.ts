@@ -23,6 +23,7 @@ async function main(): Promise<void> {
     config,
     services,
     users: repos.users,
+    companies: repos.companies,
     checkDatabase: async () => {
       await raw.$queryRaw`SELECT 1`;
     },

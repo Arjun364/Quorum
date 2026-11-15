@@ -1,13 +1,13 @@
 import type { Prisma, PrismaClient, User } from '@prisma/client';
 import type { AuthUser, UserRepositoryContract } from '../types';
 
-/** Reads and writes users with the raw client (login and bootstrap run before any organization is known). */
+/** Reads and writes users with the raw client (login and bootstrap run before any company is known). */
 export class UserRepository implements UserRepositoryContract {
   constructor(private readonly db: PrismaClient) {}
 
-  /** Finds a user by lowercase email, or null. */
-  findByEmail(email: string): Promise<User | null> {
-    return this.db.user.findUnique({ where: { email } });
+  /** Finds a user by lowercase email inside one company (null companyId: the platform owner). */
+  findByEmail(companyId: number | null, email: string): Promise<User | null> {
+    return this.db.user.findFirst({ where: { companyId, email } });
   }
 
   /** Finds a user by id, or null. */
@@ -19,14 +19,7 @@ export class UserRepository implements UserRepositoryContract {
   findAuthById(id: number): Promise<(AuthUser & { status: User['status'] }) | null> {
     return this.db.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        organizationId: true,
-        departmentId: true,
-        systemRole: true,
-        status: true,
-        mustChangePassword: true,
-      },
+      select: { id: true, companyId: true, departmentId: true, systemRole: true, status: true, mustChangePassword: true },
     });
   }
 

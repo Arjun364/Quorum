@@ -1,16 +1,22 @@
 model Department {
   id             Int          @id @default(autoincrement())
+  companyId      Int
+  company        Company      @relation(fields: [companyId], references: [id])
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
   name           String
   code           String
+  /// source of truth for who the head is; the DepartmentHead role is set and cleared with it
   headUserId     Int?
+  head           User?        @relation("DepartmentHead", fields: [headUserId], references: [id])
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   createdBy      Int?
 
-  users User[]
+  members     User[]       @relation("DepartmentMembers")
+  invitations Invitation[]
 
   @@unique([organizationId, code])
+  @@index([companyId])
   @@index([organizationId])
 }

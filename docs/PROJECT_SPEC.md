@@ -1,4 +1,4 @@
-# Quorum: Project Specification (v7)
+# Quorum: Project Specification (v8)
 
 This is the complete specification. Build exactly what is written here. If something is unclear or missing, ask before guessing, and record the decision in section 17.
 
@@ -456,4 +456,9 @@ Daily tasks, subtasks, time tracking, Kanban, Zoho synchronization, replying to 
 - 2026-11-15: Frontend is feature-based per `docs/FRONTEND_PATTERN.md` (features and a same-shaped `shared/` layer, page + orchestration hook pairs, barrels, `@/` alias). Section 8's frontend tree is superseded by that document.
 - 2026-11-15: Prisma schema is split into one file per model (`backend/prisma/schema/`), configured through `prisma.config.ts`; migrations stay in `backend/prisma/migrations/` and are committed. Rules are in CLAUDE.md.
 - 2026-11-15: The backend moved from NestJS to Express 5 in the team's layered layout (config, constants, controllers, helpers, middlewares, prisma, repositories, routes, services, types, utils, validators, app.ts, server.ts). The API contract did not change. Earlier log entries that mention NestJS are history.
+- 2026-11-15 (v8, M1a): **Hierarchy is Company, Organization, Department, people.** The Company is the tenant and is registered by its head (CEO) from the public website; Organizations are units inside it, managed only by the company head; the Admin role is removed. This supersedes every earlier statement that "organization" means the tenant, and sections 3, 4.11 and 9 where they differ (join links, approval queues and temporary passwords are gone).
+- 2026-11-15 (v8): Each company has its own address (`<slug>.<root domain>`) and its own branding: name, logo (Cloudinary) and a theme (Forest, Ocean, Graphite, or a custom accent that must stay readable). Reserved names (www, admin, api, support...) cannot be taken. Email is unique within a company.
+- 2026-11-15 (v8): People join by **email invitation** tied to the exact address (single-use, 7 days, they set their own password). The company head invites department heads; department heads invite employees (M1b).
+- 2026-11-15 (v8): Moving people: inside one organization both department heads agree; across organizations the company head also approves (M1b). Issues go employee to department head to company head (brief summary only); problems with Quorum itself go to the platform owner (M1c).
+- 2026-11-15 (v8): CEO recovery: the platform owner can transfer the Company Head role after verifying identity (logged). Signup is open now; a platform setting will allow approval-only or closed signup later (M1c).
 - Open: hosting choice for the API and database (decide at deployment); whether an email may belong to two organizations (currently no).

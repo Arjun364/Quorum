@@ -1,0 +1,21 @@
+/// A single-use invitation tied to one email address. The person sets their own password when accepting.
+model Invitation {
+  id           Int        @id @default(autoincrement())
+  companyId    Int
+  company      Company    @relation(fields: [companyId], references: [id])
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  /// stored lowercase; the account must be created with exactly this address
+  email        String
+  name         String
+  role         SystemRole
+  tokenHash    String     @unique
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  revokedAt    DateTime?
+  invitedBy    Int
+  createdAt    DateTime   @default(now())
+
+  @@index([companyId])
+  @@index([departmentId])
+}

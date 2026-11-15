@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+﻿import type { PrismaClient } from '@prisma/client';
 import type { AuditEntry, AuditLogRepositoryContract } from '../types';
 
 /** Writes audit entries. */
@@ -10,7 +10,7 @@ export class AuditLogRepository implements AuditLogRepositoryContract {
     await this.db.auditLog.create({
       data: {
         userId: entry.userId ?? null,
-        organizationId: entry.organizationId ?? null,
+        companyId: entry.companyId ?? null,
         action: entry.action,
         entityType: entry.entityType,
         entityId: entry.entityId === undefined || entry.entityId === null ? null : String(entry.entityId),
