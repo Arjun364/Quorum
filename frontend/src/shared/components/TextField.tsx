@@ -19,7 +19,7 @@ export function TextField({ label, error, hint, trailing, className = '', ref, .
           ref={ref}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`block min-h-11 w-full rounded-lg border bg-surface px-3 text-base text-ink placeholder:text-muted/70 ${
+          className={`field block min-h-12 w-full rounded-xl border bg-surface px-3.5 text-base text-ink placeholder:text-muted/70 ${
             error ? 'border-danger' : 'border-line hover:border-muted'
           } ${trailing ? 'pr-20' : ''}`}
           {...input}

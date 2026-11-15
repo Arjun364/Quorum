@@ -11,7 +11,8 @@ export function Alert({ tone = 'info', children }: AlertProps) {
     <div
       role={tone === 'error' ? 'alert' : 'status'}
       aria-live="polite"
-      className={`rounded-lg border px-3.5 py-3 text-sm ${TONES[tone]}`}
+      data-enter
+      className={`rounded-xl border px-3.5 py-3 text-sm ${TONES[tone]}`}
     >
       {children}
     </div>

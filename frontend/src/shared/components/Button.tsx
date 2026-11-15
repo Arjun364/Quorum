@@ -1,12 +1,12 @@
 import type { ButtonProps, ButtonVariant } from '../types';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-ink hover:bg-accent-hover active:bg-accent-hover',
-  secondary: 'border border-line bg-surface text-ink hover:bg-surface-2 active:bg-surface-2',
+  primary: 'btn-primary bg-accent text-accent-ink hover:bg-accent-hover active:bg-accent-hover',
+  secondary: 'border border-line bg-surface text-ink hover:bg-surface-2 hover:border-muted active:bg-surface-2',
   ghost: 'text-ink hover:bg-surface-2 active:bg-surface-2',
 };
 
-/** Renders a button; while `loading` it is disabled and shows a spinner so a request cannot be sent twice. */
+/** Renders a button that steps up on hover and presses in on click; while `loading` it is disabled and shows a spinner so a request cannot be sent twice. */
 export function Button({
   variant = 'primary',
   loading = false,
@@ -21,7 +21,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${className}`}
+      className={`btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${className}`}
       {...rest}
     >
       {loading && (

@@ -1,4 +1,4 @@
-import { Logo } from '@/shared';
+import { Logo, stagger } from '@/shared';
 import { LoginForm, LoginHero } from '../components';
 import { useLogin } from '../hooks';
 
@@ -11,18 +11,26 @@ export function LoginPage() {
       <LoginHero />
       <main id="main" className="flex items-center justify-center px-5 py-10 sm:px-10">
         <div className="w-full max-w-sm">
-          <Logo className="mb-10 text-ink lg:hidden" />
-          <h1 className="font-display text-3xl font-semibold tracking-tight">Sign In</h1>
-          <p className="mt-2 text-muted">Use the email your administrator registered for you.</p>
-          <LoginForm
-            emailRef={emailRef}
-            passwordRef={passwordRef}
-            errors={errors}
-            formError={formError}
-            isSubmitting={isSubmitting}
-            onSubmit={handleSubmit}
-          />
-          <p className="mt-8 text-sm text-muted">
+          <div data-enter="fade">
+            <Logo className="mb-10 text-ink lg:hidden" />
+          </div>
+          <h1 data-enter style={stagger(1)} className="font-display text-3xl font-semibold tracking-tight">
+            Sign In
+          </h1>
+          <p data-enter style={stagger(2)} className="mt-2 text-muted">
+            Use the email your administrator registered for you.
+          </p>
+          <div data-enter style={stagger(3)}>
+            <LoginForm
+              emailRef={emailRef}
+              passwordRef={passwordRef}
+              errors={errors}
+              formError={formError}
+              isSubmitting={isSubmitting}
+              onSubmit={handleSubmit}
+            />
+          </div>
+          <p data-enter="fade" style={stagger(5)} className="mt-8 text-sm text-muted">
             Trouble signing in? Ask your department head or administrator to reset your password.
           </p>
         </div>

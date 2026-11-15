@@ -11,11 +11,11 @@ export function AppShell() {
     <div className="min-h-dvh">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-xl focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
       >
         Skip to Main Content
       </a>
-      <header className="border-b border-line bg-surface">
+      <header className="glass sticky top-0 z-30 border-b border-line">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-3">
           <Logo />
           <div className="flex min-w-0 items-center gap-3">
