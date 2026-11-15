@@ -595,3 +595,86 @@ ${page}
   writeFileSync('option-6.html', html, 'utf8');
   console.log(`option-6.html  motion demo  (${html.length} bytes)`);
 }
+
+/* ------------------------------------------------------------------ option 7: short copy and a 3D hero
+   split hero whose frame holds the page's one effect (orb-sphere, by name: the brief asks for 3D),
+   liquid-type on the headline (the one pointer effect), line-carries-colour on the brand section. No scene, no FAQ. */
+{
+  const d = { ...deal[0], hero: 'split', rhythm: 'space' };
+  const c = {
+    kicker: 'Monthly department meetings',
+    h1: 'Meeting minutes for departments',
+    lead: 'Run each department’s monthly meeting in one place. Every point gets an owner who confirms it, and open points carry over.',
+    product: ['Every point in one list', 'Each point shows its owner, its state and its due date.'],
+    titles: ['Start the meeting', 'Owners confirm', 'The head approves'],
+    steps: ['A meeting in three steps', 'A note-taker is drawn from the people present.', 'Each person confirms the points that name them.', 'Open points move to the next meeting.'],
+    brand: ['Your company’s address, logo and colours', 'Your people sign in at your own address and see your brand.', 'Three colour presets, or your own accent.'],
+    security: ['Your minutes stay private', [['Separate by company', 'Only your company sees your data.'], ['No minutes in email', 'Emails only link into the app.'], ['Protected sign-in', 'Passwords are stored hashed.']]],
+    faqLine: '', faq: [],
+    close: ['Start your organization', 'Create the company account, then invite your department heads.'],
+    lede: 'Minutes that each owner confirms.',
+  };
+  const heroHtml = `<section class="hero hero--split" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text grid hero__grid">
+      <div class="hero__text span-5" data-moment="liquid-type" data-moment-opts='{"strength": 1.1, "radius": 0.34}'>
+        <p class="hero__kicker"><span class="dot" aria-hidden="true"></span>${c.kicker}</p>
+        <h1 id="hero-h" class="mo-lt__type">${c.h1}</h1>
+        <p class="hero__lead">${c.lead}</p>
+        ${heroButtons}
+      </div>
+      <div class="hero__media span-6 start-7" data-fx="orb-sphere" data-fx-seed="11" data-fx-params='{"size": 0.42, "calm": 0, "rim": 1.5, "innerContrast": 1, "stars": 140, "glow": 0.9}' aria-hidden="true"></div>
+    </div></div>
+  </section>`;
+  let page = body({}, c, d);
+  page = page.replace(/<section class="hero[\s\S]*?<\/section>/, heroHtml);
+  page = page.replace(/\s*<section class="section" id="faq"[\s\S]*?<\/section>/, '');
+  page = page.replace('<div class="nav__item"><a class="nav__link" href="#faq">Questions</a></div>', '');
+  page = page.replace('<li><a href="#faq">Questions</a></li>', '');
+  page = page.replace('<a class="link" href="#faq">Read the questions</a>', '<a class="link" href="#security">See how data is kept</a>');
+  page = page.replace('<section class="section" id="brand" style="--h:1"', `<section class="section ground-inverse" id="brand" style="--h:1" data-moment="line-carries-colour" data-moment-opts='{"from": "base"}'`);
+  const title = `${NAME}: meeting minutes for company departments`;
+  const desc = 'Run each department’s monthly meeting in one place: every point has an owner who confirms it, and open points carry over.';
+  const html = `<!doctype html>
+<html lang="en" data-type="software" data-radius="soft" data-ground="sky" data-buttons="${d.buttons}" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${title}</title>
+<meta name="description" content="${desc}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+${startTxt(1)}
+<link rel="stylesheet" href="assets/ui/base.css">
+<link rel="stylesheet" href="assets/ui/window/fragment.css">
+<link rel="stylesheet" href="assets/ui/chat/fragment.css">
+<link rel="stylesheet" href="assets/ui/checklist/fragment.css">
+<link rel="stylesheet" href="assets/ui/notify/fragment.css">
+<link rel="stylesheet" href="assets/ui/toggles/fragment.css">
+<link rel="stylesheet" href="assets/ui/doc/fragment.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js"><link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/liquid-type/moment.js"><link rel="modulepreload" href="assets/moments/line-carries-colour/moment.js">
+<style>
+${appCss}
+</style>
+</head>
+<body>
+<!-- type: software · option 7 (short copy, 3D hero)
+     deal: hero split, nav ${d.nav}, close ${d.close}, footer ${d.footer}, rhythm space, buttons ${d.buttons}, mark ${d.mark}
+     beats: orb-sphere (the effect, hero frame; named because the brief asks for 3D) with liquid-type on the h1 · line-carries-colour (brand section) -->
+${page}
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+</body>
+</html>
+`;
+  writeFileSync('option-7.html', html, 'utf8');
+  console.log(`option-7.html  short copy, 3D hero  (${html.length} bytes)`);
+}
