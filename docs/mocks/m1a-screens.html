@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>Quorum · M1a screen mocks</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#f6f4ef; --surface:#fffdf8; --surface-2:#efece4; --ink:#1c1c1a; --muted:#5c5a53; --line:#d9d5c9;
+    --accent:#1f3a34; --accent-hover:#2b4d45; --accent-ink:#f6f4ef; --accent-soft:#dfe9e3;
+    --danger:#a3321f; --danger-soft:#fbe9e5; --ok:#2f6b4f; --ok-soft:#e1efe7; --warn:#8a5a00; --warn-soft:#f6ecd2;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --s1:0 1px 2px rgb(20 20 18/.06),0 1px 1px rgb(20 20 18/.04);
+    --s2:0 6px 16px -4px rgb(20 20 18/.14),0 2px 4px rgb(20 20 18/.06);
+    --s3:0 18px 40px -12px rgb(20 20 18/.28);
+    --ring:0 0 0 2px var(--surface),0 0 0 4px var(--accent);
+    --display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:ui-sans-serif,"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#161513; --surface:#1e1d1a; --surface-2:#272622; --ink:#ece9e1; --muted:#a9a59a; --line:#38362f;
+    --accent:#8fc7b3; --accent-hover:#a6d6c4; --accent-ink:#10201c; --accent-soft:#223630;
+    --danger:#f0907d; --danger-soft:#3a1f19; --ok:#86c9a6; --ok-soft:#1d3028; --warn:#e2b95f; --warn-soft:#36290f;
+    --s2:0 8px 20px -6px rgb(0 0 0/.55),0 2px 4px rgb(0 0 0/.3); --s3:0 22px 48px -14px rgb(0 0 0/.7);
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  button,input,select{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .display{font-family:var(--display);letter-spacing:-.01em}
+
+  /* mock chrome */
+  .mockbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 20px}
+  .mockbar p{margin:0 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px}
+  .tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:transform .16s var(--ease),box-shadow .16s var(--ease)}
+  .tab:hover{transform:translateY(-1px);box-shadow:var(--s2)}
+  .tab[aria-selected=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .stage{max-width:1180px;margin:22px auto 60px;padding:0 20px}
+  .note{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14px;color:var(--muted);margin-bottom:16px}
+  .note b{color:var(--ink)}
+  .screen{display:none}.screen.on{display:block;animation:in .5s var(--ease) both}
+  @keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* browser + app frames */
+  .browser{border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--s3);background:var(--bg);position:relative}
+  .urlbar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .url{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 14px;font-size:12.5px}
+  .url b{color:var(--ink);font-weight:600}
+  .appbar{display:flex;align-items:center;gap:22px;padding:12px 24px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 80%,transparent)}
+  .logo{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:18px}
+  .logo i{width:28px;height:28px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-style:normal;font-size:12px;font-family:var(--sans);font-weight:800;letter-spacing:.02em}
+  .logo svg{width:16px;height:16px}
+  .nav{display:flex;gap:4px;flex:1}
+  .nav a{padding:7px 13px;border-radius:10px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;transition:background .15s,color .15s}
+  .nav a:hover{background:var(--surface-2);color:var(--ink)}
+  .nav a[aria-current=page]{background:var(--accent-soft);color:var(--accent)}
+  .me{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .page{padding:34px 28px 40px;min-height:540px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:4px 0 22px}
+  .head h1{font-size:34px;font-weight:600}.head p{margin:4px 0 0;color:var(--muted)}
+  .powered{text-align:center;font-size:12px;color:var(--muted);padding:14px}
+
+  /* controls */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:12px;border:1px solid transparent;font-weight:600;font-size:14px;cursor:pointer;background:var(--accent);color:var(--accent-ink);box-shadow:var(--s1);text-decoration:none;transition:transform .16s var(--ease),box-shadow .16s var(--ease),background .16s}
+  .btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--s2)}
+  .btn:active{transform:scale(.97);box-shadow:none}
+  .btn.sec{background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:none}
+  .btn.sec:hover{background:var(--surface-2);border-color:var(--muted)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:none}.btn.ghost:hover{background:var(--surface-2)}
+  .btn.sm{min-height:36px;padding:0 14px;font-size:13px;border-radius:10px}
+  .btn.lg{min-height:52px;padding:0 28px;font-size:16px;border-radius:14px}
+  .btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+  .field{display:block}.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+  .field input,.field select{width:100%;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .14s,box-shadow .14s}
+  .field input:hover,.field select:hover{border-color:var(--muted)}
+  .field input:focus-visible,.field select:focus-visible{outline:2px solid transparent;box-shadow:var(--ring)}
+  .field small{display:block;margin-top:6px;color:var(--muted);font-size:13px}
+  .stack{display:grid;gap:16px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .addr{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;transition:border-color .14s,box-shadow .14s}
+  .addr:focus-within{box-shadow:var(--ring);border-color:var(--accent)}
+  .addr input{border:0!important;box-shadow:none!important;border-radius:0!important;flex:1;min-width:0}
+  .addr span{padding:0 14px;background:var(--surface-2);align-self:stretch;display:grid;place-items:center;color:var(--muted);font-size:14px;border-left:1px solid var(--line)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:3px;background:var(--surface-2)}
+  .seg span{padding:7px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+  .seg span.on{background:var(--surface);color:var(--ink);box-shadow:var(--s1)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);background:var(--surface)}.chip.on{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.off{background:var(--surface-2);color:var(--muted)}
+  .av{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--s1)}.card.pad{padding:22px}
+  .lift{transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s}.lift:hover{transform:translateY(-2px);box-shadow:var(--s2);border-color:var(--muted)}
+  .who{display:flex;align-items:center;gap:12px}.who b{display:block;font-weight:600}.who span{color:var(--muted);font-size:13px}
+  .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .okbox{display:flex;gap:10px;background:var(--ok-soft);color:var(--ok);border-radius:12px;padding:11px 14px;font-size:13.5px;font-weight:600}
+  .warnbox{display:flex;gap:10px;background:var(--warn-soft);border-radius:12px;padding:11px 14px;font-size:13.5px}
+  .steps{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:22px;font-size:13px;font-weight:600;color:var(--muted)}
+  .steps span{display:inline-flex;align-items:center;gap:8px}.steps i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;background:var(--surface-2);color:var(--muted)}
+  .steps .done i{background:var(--ok-soft);color:var(--ok)}.steps .now{color:var(--ink)}.steps .now i{background:var(--accent);color:var(--accent-ink)}.steps u{width:26px;height:2px;background:var(--line)}
+  .center{max-width:470px;margin:0 auto;padding:26px 0}
+  .scrim{position:absolute;inset:0;background:rgb(20 20 18/.38);z-index:5}
+  .drawer{position:absolute;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--s3);z-index:6;padding:26px;overflow:auto;animation:slide .45s var(--ease) both}
+  @keyframes slide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+  .drawer h2{font-size:24px;font-weight:600}.drawer .sub{color:var(--muted);margin:4px 0 20px}
+  .foot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+  .modal{position:absolute;left:0;right:0;margin:0 auto;top:64px;width:min(520px,calc(100% - 32px));background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--s3);z-index:6;padding:26px;animation:in .45s var(--ease) both}
+
+  /* landing */
+  .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:56px 40px 40px}
+  .hero h1{font-size:clamp(34px,5vw,56px);line-height:1.06;font-weight:600}
+  .hero p.lead{font-size:18px;color:var(--muted);margin:16px 0 26px;max-width:480px}
+  .cta{display:flex;gap:10px;flex-wrap:wrap}
+  .find{display:flex;gap:8px;align-items:center;margin-top:26px;font-size:14px;color:var(--muted)}
+  .find .addr{max-width:300px}
+  .band{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:10px 40px 40px}
+  .band .card{padding:22px}.band b{font-size:17px;display:block;margin:10px 0 4px}.band p{margin:0;color:var(--muted);font-size:14px}
+  .num{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700}
+  .cband{margin:0 40px 40px;border-radius:20px;background:var(--accent);color:var(--accent-ink);padding:34px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .cband .btn{background:var(--surface);color:var(--ink)}
+  .rows{margin:0;padding:0;list-style:none}.rows li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.rows li:last-child{border:0}
+  .rows small{display:block;color:var(--muted)}
+
+  /* branding preview + theme cards */
+  .branding{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start}
+  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .preset{border:2px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);cursor:pointer;text-align:left;transition:transform .16s var(--ease),border-color .16s,box-shadow .16s}
+  .preset:hover{transform:translateY(-2px);box-shadow:var(--s2)}.preset[aria-pressed=true]{border-color:var(--accent);box-shadow:var(--ring)}
+  .preset .sw{display:flex;gap:4px;margin-bottom:8px}.preset .sw i{flex:1;height:26px;border-radius:7px}
+  .preset b{font-size:14px}
+  .drop{border:2px dashed var(--line);border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;background:var(--surface);transition:border-color .15s,background .15s}.drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .logoimg{width:56px;height:56px;border-radius:14px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;flex:none}
+  .contrast{display:flex;align-items:center;gap:10px;font-size:13.5px;margin-top:8px}
+  .colorrow{display:flex;gap:10px;align-items:center}.colorrow input[type=color]{width:52px;height:46px;min-height:0;padding:3px;border-radius:12px;cursor:pointer}
+  .preview{--p-bg:#f6f4ef;--p-surface:#fffdf8;--p-ink:#1c1c1a;--p-muted:#5c5a53;--p-line:#d9d5c9;--p-accent:#1f3a34;--p-hover:#2b4d45;--p-ink-on:#f6f4ef;--p-soft:#dfe9e3;
+    background:var(--p-bg);color:var(--p-ink);border:1px solid var(--p-line);border-radius:18px;overflow:hidden;box-shadow:var(--s2);position:sticky;top:90px;transition:background .25s}
+  .preview .pbar{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--p-surface);border-bottom:1px solid var(--p-line);font-family:var(--display);font-weight:600}
+  .preview .pbar i{width:26px;height:26px;border-radius:7px;background:var(--p-accent);color:var(--p-ink-on);display:grid;place-items:center;font:800 11px var(--sans);font-style:normal;transition:background .25s}
+  .preview .pbody{padding:20px}
+  .preview .pbtn{display:inline-block;padding:10px 18px;border-radius:11px;background:var(--p-accent);color:var(--p-ink-on);font-weight:600;font-size:14px;transition:background .25s}
+  .preview .pbtn:hover{background:var(--p-hover)}
+  .preview .pbtn.o{background:transparent;color:var(--p-ink);border:1px solid var(--p-line)}
+  .preview .pcard{background:var(--p-surface);border:1px solid var(--p-line);border-radius:14px;padding:14px;margin-top:14px}
+  .preview .pchip{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--p-soft);color:var(--p-accent);font-size:12px;font-weight:700}
+  .preview small{color:var(--p-muted)}
+  .signin{display:grid;grid-template-columns:1fr 1fr;min-height:560px}
+  .signin .l{padding:46px;display:flex;flex-direction:column;justify-content:space-between;background:var(--accent);color:var(--accent-ink)}
+  .signin .r{padding:46px;display:flex;align-items:center;justify-content:center}
+  .email{max-width:480px;margin:0 auto;background:#fff;color:#1c1c1a;border:1px solid #ddd;border-radius:14px;padding:26px;font-family:system-ui,sans-serif;box-shadow:var(--s2)}
+  .email .eb{display:inline-block;padding:11px 20px;border-radius:8px;background:#1d4e89;color:#fff;font-weight:600;text-decoration:none}
+  .cl{display:grid;gap:12px}.cl li{display:flex;align-items:center;gap:12px;list-style:none;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+  .cl .tick{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);font-weight:700;font-size:13px;flex:none}
+  .cl .d .tick{background:var(--ok-soft);color:var(--ok)}.cl .d{opacity:.8}.cl li span{flex:1}.cl small{display:block;color:var(--muted)}
+  @media(max-width:900px){.hero,.branding,.signin,.row2,.band{grid-template-columns:1fr}.nav{display:none}.preview{position:static}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="mockbar"><p>Quorum · Milestone 1a · website and first-run mocks for approval</p><div class="tabs" role="tablist" id="tabs"></div></div>
+<div class="stage">
+
+<!-- 1 WEBSITE HOME -->
+<section class="screen" id="s1" data-title="1 · Website home">
+  <div class="note"><b>Who:</b> anyone visiting our website. <b>Purpose:</b> explain the product and send the CEO to register. Companies sign in on their own address (step 5).</div>
+  <div class="browser"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>quorum.app</b></div></div>
+    <header class="appbar"><span class="logo"><i><svg viewBox="0 0 32 32"><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="var(--accent-ink)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Quorum</span>
+      <nav class="nav"><a href="#">How it works</a><a href="#">For companies</a></nav><a class="btn ghost sm" href="#">Sign in</a><a class="btn sm" href="#">Start Your Organization</a></header>
+    <div class="hero">
+      <div><p class="eyebrow">Monthly department meetings</p>
+        <h1 class="display" style="margin-top:8px">Every point has an owner. Every meeting ends confirmed.</h1>
+        <p class="lead">Record decisions, let each owner confirm their own points, and watch unfinished work carry over by itself. Replace the spreadsheet of minutes.</p>
+        <div class="cta"><a class="btn lg" href="#">Start Your Organization</a><a class="btn sec lg" href="#">See How It Works</a></div>
+        <div class="find">Already a member? <div class="addr"><input placeholder="your-company" aria-label="Company address"><span>.quorum.app</span></div><a class="btn sec sm" href="#">Go</a></div></div>
+      <div class="card pad" style="box-shadow:var(--s3)"><p class="eyebrow">Sales · Monthly meeting</p>
+        <ul class="rows"><li><span>Share ISO audit schedule with the team<small>Anjali</small></span><span class="pill ok">Confirmed</span></li><li><span>Move UAT sign-off for Client Portal<small>Rahul</small></span><span class="pill warn">Waiting</span></li><li><span>Phone use on the floor<small>Standing point</small></span><span class="pill ok">Discussed</span></li></ul></div>
+    </div>
+    <div class="band"><div class="card lift"><span class="num">1</span><b>Run the meeting</b><p>The head starts it; a random note-taker is drawn fairly from those present.</p></div>
+      <div class="card lift"><span class="num">2</span><b>Owners confirm</b><p>Each person confirms only the points that name them. Nobody approves their own words.</p></div>
+      <div class="card lift"><span class="num">3</span><b>Nothing is lost</b><p>Unfinished points carry over to the next meeting, with every version kept.</p></div></div>
+    <div class="cband"><div><h2 class="display" style="font-size:28px">Set up your company in minutes</h2><p style="margin:6px 0 0;opacity:.85">Your own address, your logo and colours.</p></div><a class="btn lg" href="#">Start Your Organization</a></div>
+    <p class="powered">© Quorum</p></div>
+</section>
+
+<!-- 2 SIGNUP -->
+<section class="screen" id="s2" data-title="2 · Start your organization">
+  <div class="note"><b>Who:</b> the CEO. <b>Rules:</b> the company address becomes the subdomain (live availability check; reserved names like www, admin, api are blocked). The CEO is the only company-level account. You can later switch signups to approval-only in your admin panel.</div>
+  <div class="browser"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>quorum.app</b>/start</div></div>
+    <div class="page"><div class="center">
+      <div class="steps"><span class="now"><i>1</i>Company</span><u></u><span><i>2</i>Verify email</span><u></u><span><i>3</i>Brand</span><u></u><span><i>4</i>Structure</span></div>
+      <h1 class="display" style="font-size:34px">Start your organization</h1><p style="color:var(--muted)">You will be the company head, the only account with company-level control.</p>
+      <div class="stack" style="margin-top:22px">
+        <div class="field"><label>Company Name</label><input id="cname" value="Northwind Engineering"></div>
+        <div class="field"><label>Company Address</label><div class="addr"><input id="caddr" value="northwind" aria-label="Company address"><span>.quorum.app</span></div>
+          <small id="avail" style="color:var(--ok);font-weight:600">✓ northwind.quorum.app is available</small></div>
+        <div class="row2"><div class="field"><label>Your Name</label><input value="Meera Joseph"></div><div class="field"><label>Your Title</label><input value="CEO"></div></div>
+        <div class="field"><label>Company Email</label><input value="meera@northwind.example"><small>We send a verification link to this address.</small></div>
+        <div class="field"><label>Password</label><input type="password" value="••••••••••••"><small>10+ characters with upper and lower case and a number.</small></div>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px"><input type="checkbox" checked style="margin-top:4px;width:18px;height:18px"> <span>I agree to the Terms and the Privacy Policy.</span></label>
+        <button class="btn lg">Create Company Account</button>
+      </div></div></div></div>
+</section>
+
+<!-- 3 VERIFY -->
+<section class="screen" id="s3" data-title="3 · Verify email">
+  <div class="note"><b>Rule:</b> the company stays inactive until the CEO opens the link in the email. The link works once and expires in 24 hours.</div>
+  <div class="browser"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>quorum.app</b>/verify</div></div>
+    <div class="page"><div class="center" style="text-align:center">
+      <div class="steps" style="justify-content:center"><span class="done"><i>✓</i>Company</span><u></u><span class="now"><i>2</i>Verify email</span><u></u><span><i>3</i>Brand</span><u></u><span><i>4</i>Structure</span></div>
+      <span class="av" style="width:64px;height:64px;margin:6px auto 16px;font-size:28px">✉</span>
+      <h1 class="display" style="font-size:32px">Check your inbox</h1>
+      <p style="color:var(--muted)">We sent a verification link to <b style="color:var(--ink)">meera@northwind.example</b>. Open it to activate northwind.quorum.app.</p>
+      <div class="cta" style="justify-content:center;margin-top:18px"><button class="btn sec">Resend Email</button><button class="btn ghost">Use a Different Email</button></div>
+      <p style="font-size:13px;color:var(--muted);margin-top:22px">Nothing is visible to anyone until you verify.</p></div></div></div>
+</section>
+
+<!-- 4 BRAND -->
+<section class="screen" id="s4" data-title="4 · Brand and theme">
+  <div class="note"><b>Who:</b> the CEO, at first run and any time later in Settings. <b>Try it:</b> click a preset or change the colour; the preview updates live. Custom colours are checked for readable contrast, and the logo goes to our image service.</div>
+  <div class="browser"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b>/settings/brand</div></div>
+    <div class="page"><div class="steps"><span class="done"><i>✓</i>Company</span><u></u><span class="done"><i>✓</i>Verify email</span><u></u><span class="now"><i>3</i>Brand</span><u></u><span><i>4</i>Structure</span></div>
+      <div class="branding"><div class="stack" style="gap:22px">
+        <div><h1 class="display" style="font-size:32px">Make it yours</h1><p style="color:var(--muted);margin:4px 0 0">Your name, logo and colours appear everywhere your people sign in.</p></div>
+        <div class="field"><label>Company Name</label><input id="bname" value="Northwind Engineering"></div>
+        <div class="field"><label>Logo</label><div class="drop"><span class="logoimg" id="blogo">NE</span><div style="flex:1"><b>northwind-logo.png</b><div style="font-size:13px;color:var(--muted)">PNG, JPG or WebP · up to 2 MB · square works best</div></div><button class="btn sec sm">Replace</button></div></div>
+        <div class="field"><label>Theme</label><div class="presets" id="presets">
+          <button class="preset" data-t="forest" aria-pressed="true"><div class="sw"><i style="background:#1f3a34"></i><i style="background:#dfe9e3"></i><i style="background:#f6f4ef;border:1px solid #d9d5c9"></i></div><b>Forest</b></button>
+          <button class="preset" data-t="ocean" aria-pressed="false"><div class="sw"><i style="background:#1d4e89"></i><i style="background:#dbe7f5"></i><i style="background:#f4f6f9;border:1px solid #d5dbe4"></i></div><b>Ocean</b></button>
+          <button class="preset" data-t="graphite" aria-pressed="false"><div class="sw"><i style="background:#2b2f36"></i><i style="background:#e4e6ea"></i><i style="background:#f5f5f4;border:1px solid #d9d9d6"></i></div><b>Graphite</b></button></div></div>
+        <div class="field"><label>Custom Accent Colour</label><div class="colorrow"><input type="color" id="custom" value="#1f3a34" aria-label="Accent colour"><div class="contrast" id="contrast"></div></div><small>Buttons, links and highlights. Hover and soft shades are made for you.</small></div>
+        <div class="cta"><button class="btn">Save and Continue</button><button class="btn ghost">Skip for Now</button></div>
+      </div>
+      <aside class="preview" id="preview" aria-label="Live preview"><div class="pbar"><i id="pmark">NE</i><span id="pname">Northwind Engineering</span></div>
+        <div class="pbody"><p class="eyebrow" style="color:var(--p-muted)">Department Head</p><h3 class="display" style="font-size:26px;margin-top:4px">Welcome, Rahul</h3>
+          <div class="pcard"><div style="display:flex;justify-content:space-between;align-items:center"><b>Share ISO audit schedule</b><span class="pchip">Confirmed</span></div><small>Anjali · due 30 Nov</small></div>
+          <div style="display:flex;gap:8px;margin-top:16px"><span class="pbtn">Start Meeting</span><span class="pbtn o">View Minutes</span></div></div>
+        <div style="padding:10px 20px 16px"><small>This is how your people will see it.</small></div></aside></div></div></div>
+</section>
+
+<!-- 5 COMPANY SIGN-IN -->
+<section class="screen" id="s5" data-title="5 · Company sign-in">
+  <div class="note"><b>Who:</b> everyone in the company. <b>Purpose:</b> the sign-in page is on the company's own address and shows their logo, name and colours before login (shown here in the Ocean theme). A small "Powered by Quorum" line can be switched off per company.</div>
+  <div class="browser" style="--accent:#1d4e89;--accent-hover:#25619f;--accent-ink:#fff;--accent-soft:#dbe7f5"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b>/login</div></div>
+    <div class="signin"><div class="l"><span class="logo" style="color:var(--accent-ink)"><i style="background:#fff;color:#1d4e89">NE</i>Northwind Engineering</span>
+        <div><p class="eyebrow" style="color:inherit;opacity:.75">Monthly department meetings</p><h1 class="display" style="font-size:42px;line-height:1.08;margin-top:10px">Every point has an owner. Every meeting ends confirmed.</h1></div><small style="opacity:.7">Powered by Quorum</small></div>
+      <div class="r"><div style="width:100%;max-width:340px"><h2 class="display" style="font-size:30px">Sign In</h2><p style="color:var(--muted)">Use your Northwind email.</p>
+        <div class="stack" style="margin-top:20px"><div class="field"><label>Work Email</label><input placeholder="you@northwind.example…"></div><div class="field"><label>Password</label><input type="password"></div><button class="btn" style="width:100%">Sign In</button></div>
+        <p style="margin-top:16px;font-size:13px;color:var(--muted)">Forgot your password? Ask your department head.</p></div></div></div></div>
+</section>
+
+<!-- 6 CEO HOME -->
+<section class="screen" id="s6" data-title="6 · CEO home">
+  <div class="note"><b>Who:</b> the CEO right after setup. <b>Purpose:</b> a short checklist, and only a <b>brief</b> issues summary. Employee issues go to their department head first; the CEO sees an item only when a department head escalates it.</div>
+  <div class="browser"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b></div></div>
+    <header class="appbar"><span class="logo"><i>NE</i>Northwind Engineering</span><nav class="nav"><a href="#" aria-current="page">Home</a><a href="#">Organizations</a><a href="#">Settings</a></nav><div class="me">meera@northwind.example <button class="btn sec sm">Sign Out</button></div></header>
+    <div class="page"><p class="eyebrow">Company Head</p><h1 class="display" style="font-size:38px;margin:4px 0 24px">Welcome, Meera</h1>
+      <div class="split" style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start">
+        <div class="card pad"><h2 style="font-size:18px">Get your company running</h2><p style="margin:2px 0 14px;color:var(--muted);font-size:14px">3 of 5 steps done</p>
+          <ul class="cl" style="padding:0;margin:0">
+            <li class="d"><span class="tick">✓</span><span>Verify your email</span></li><li class="d"><span class="tick">✓</span><span>Set your brand</span></li><li class="d"><span class="tick">✓</span><span>Create an organization<small>Northwind Engineering</small></span></li>
+            <li><span class="tick">4</span><span><b>Add departments</b><small>Sales, Engineering, HR…</small></span><button class="btn sm">Add</button></li>
+            <li><span class="tick">5</span><span><b>Invite department heads</b><small>They invite their own teams</small></span><button class="btn sec sm" disabled>Invite</button></li></ul></div>
+        <div class="stack"><div class="card pad"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:18px">Issues</h2><span class="pill ok">Nothing escalated</span></div><p style="color:var(--muted);font-size:14px;margin:8px 0 12px">Department heads handle their teams' problems. You see the summary here.</p>
+            <ul class="rows"><li>Sales<span class="pill off">2 open</span></li><li>Engineering<span class="pill off">0 open</span></li></ul></div>
+          <div class="card pad"><b>Company at a glance</b><ul class="rows" style="margin-top:6px"><li>Organizations<b>1</b></li><li>Departments<b>0</b></li><li>People<b>1</b></li></ul></div></div></div></div></div>
+</section>
+
+<!-- 7 ORGANIZATIONS -->
+<section class="screen" id="s7" data-title="7 · Organizations">
+  <div class="note"><b>Who:</b> the CEO only. <b>Purpose:</b> organizations are the units inside the company (a division, branch or business). The CEO manages them directly; there is no separate organization head.</div>
+  <div class="browser" style="min-height:640px"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b>/organizations</div></div>
+    <header class="appbar"><span class="logo"><i>NE</i>Northwind Engineering</span><nav class="nav"><a href="#">Home</a><a href="#" aria-current="page">Organizations</a><a href="#">Settings</a></nav><div class="me">meera@northwind.example</div></header>
+    <div class="page"><p class="eyebrow">Company Head</p><div class="head"><div><h1 class="display">Organizations</h1><p>2 organizations · 5 departments</p></div><button class="btn">+ New Organization</button></div>
+      <div class="grid"><article class="card pad lift" style="display:grid;gap:14px"><div><span class="eyebrow">ORG</span><h3 class="display" style="font-size:22px">Northwind Software</h3></div><div class="meta"><span>3 departments</span><span>28 people</span></div><div class="chips"><span class="chip">Sales</span><span class="chip">Engineering</span><span class="chip">HR</span></div></article>
+        <article class="card pad lift" style="display:grid;gap:14px"><div><span class="eyebrow">ORG</span><h3 class="display" style="font-size:22px">Northwind Services</h3></div><div class="meta"><span>2 departments</span><span>14 people</span></div><div class="chips"><span class="chip">Operations</span><span class="chip">Support</span></div></article>
+        <article class="card pad lift" style="display:grid;place-items:center;text-align:center;border-style:dashed;box-shadow:none;color:var(--muted);min-height:150px"><div style="font-size:26px">＋</div><b>New Organization</b></article></div></div>
+    <div class="scrim"></div>
+    <aside class="drawer"><h2 class="display">New Organization</h2><p class="sub">A unit inside Northwind Engineering.</p>
+      <div class="stack"><div class="field"><label>Organization Name</label><input value="Northwind Services"></div><div class="field"><label>Short Code</label><input value="SRV"><small>Used in lists and reports.</small></div>
+        <div class="warnbox"><span>ℹ️</span><span>Meeting language, time zone and working days come from your company settings.</span></div></div>
+      <div class="foot"><button class="btn sec">Cancel</button><button class="btn">Create Organization</button></div></aside></div>
+</section>
+
+<!-- 8 DEPARTMENTS + INVITE HEAD -->
+<section class="screen" id="s8" data-title="8 · Departments and invite head">
+  <div class="note"><b>Who:</b> the CEO. <b>Purpose:</b> add departments to an organization and invite each department head by email. The invite is tied to that exact address.</div>
+  <div class="browser" style="min-height:660px"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b>/organizations/software</div></div>
+    <header class="appbar"><span class="logo"><i>NE</i>Northwind Engineering</span><nav class="nav"><a href="#">Home</a><a href="#" aria-current="page">Organizations</a><a href="#">Settings</a></nav><div class="me">meera@northwind.example</div></header>
+    <div class="page"><p class="eyebrow">Organizations › Northwind Software</p><div class="head"><div><h1 class="display">Departments</h1><p>3 departments</p></div><button class="btn">+ New Department</button></div>
+      <div class="card"><ul class="rows" style="padding:0 20px">
+        <li><div class="who"><span class="av">SA</span><div><b>Sales</b><span>SAL · 9 people</span></div></div><div class="who"><span class="av">RM</span><div><b>Rahul Menon</b><span>Department Head</span></div></div><span class="pill ok">Active</span></li>
+        <li><div class="who"><span class="av">EN</span><div><b>Engineering</b><span>ENG · 14 people</span></div></div><div><span class="pill warn">Invite sent</span><small style="color:var(--muted);display:block">arun@northwind.example · expires in 6 days</small></div><div><button class="btn sec sm">Resend</button> <button class="btn ghost sm">Revoke</button></div></li>
+        <li><div class="who"><span class="av">HR</span><div><b>HR</b><span>HR · 0 people</span></div></div><span class="pill off">No head yet</span><button class="btn sm">Invite Head</button></li></ul></div></div>
+    <div class="scrim"></div>
+    <div class="modal" role="dialog" aria-label="Invite department head"><h2 class="display" style="font-size:26px">Invite the Head of HR</h2><p style="color:var(--muted);margin:4px 0 18px">They get an email, set their own password, and can then invite their team.</p>
+      <div class="stack"><div class="field"><label>Full Name</label><input value="Leena Kurian"></div><div class="field"><label>Work Email</label><input value="leena@northwind.example"><small>They must register with exactly this address.</small></div></div>
+      <div class="foot"><button class="btn sec">Cancel</button><button class="btn">Send Invitation</button></div></div></div>
+</section>
+
+<!-- 9 INVITE EMAIL + ACCEPT -->
+<section class="screen" id="s9" data-title="9 · Invite email and accept">
+  <div class="note"><b>Who:</b> the invited department head. <b>Rules:</b> the link works once and expires in 7 days. The email address is fixed; only a name and password are chosen. The email names the company in its own colours and carries no minutes.</div>
+  <div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+    <div><p class="eyebrow" style="margin-bottom:8px">The email</p>
+      <div class="email"><div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="width:34px;height:34px;border-radius:9px;background:#1d4e89;color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px">NE</span><b>Northwind Engineering</b></div>
+        <h2 style="margin:0 0 8px;font-size:21px">You are invited to lead HR</h2><p style="line-height:1.55;color:#444;margin:0 0 18px">Meera Joseph invited you to run the monthly HR meeting on Northwind Engineering's Quorum. Set your password to get started.</p><a class="eb" href="#">Accept Invitation</a>
+        <p style="font-size:12px;color:#888;margin:18px 0 0">This link works once and expires in 7 days. Sent to leena@northwind.example.</p></div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">The page it opens</p>
+      <div class="browser" style="--accent:#1d4e89;--accent-hover:#25619f;--accent-ink:#fff;--accent-soft:#dbe7f5"><div class="urlbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>northwind.quorum.app</b>/invite/…</div></div>
+        <div class="page" style="min-height:0;padding:28px"><span class="logo"><i>NE</i>Northwind Engineering</span>
+          <h1 class="display" style="font-size:28px;margin-top:20px">Welcome, Leena</h1><p style="color:var(--muted)">You will lead <b style="color:var(--ink)">HR</b> in Northwind Software.</p>
+          <div class="stack" style="margin-top:16px"><div class="field"><label>Email</label><input value="leena@northwind.example" readonly style="background:var(--surface-2)"><small>Fixed by the invitation.</small></div>
+            <div class="field"><label>Full Name</label><input value="Leena Kurian"></div><div class="field"><label>Choose a Password</label><input type="password" value="••••••••••••"></div><button class="btn">Create My Account</button></div></div></div></div></div>
+</section>
+
+</div>
+<script>
+  /* screen switcher */
+  const screens=[...document.querySelectorAll('.screen')],tabs=document.getElementById('tabs');
+  screens.forEach((s,i)=>{const b=document.createElement('button');b.className='tab';b.role='tab';b.textContent=s.dataset.title;b.onclick=()=>show(i);tabs.appendChild(b)});
+  function show(i){screens.forEach((s,k)=>s.classList.toggle('on',k===i));[...tabs.children].forEach((b,k)=>b.setAttribute('aria-selected',k===i))}
+  show(0);
+
+  /* signup: live address check */
+  const addr=document.getElementById('caddr'),avail=document.getElementById('avail'),reserved=['www','admin','api','app','mail','support'];
+  addr.addEventListener('input',()=>{const v=addr.value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    if(!v){avail.textContent='Enter a company address';avail.style.color='var(--muted)';return}
+    if(reserved.includes(v)){avail.textContent='✕ “'+v+'” is reserved. Choose another.';avail.style.color='var(--danger)'}
+    else if(v.length<3){avail.textContent='Use at least 3 characters';avail.style.color='var(--muted)'}
+    else{avail.textContent='✓ '+v+'.quorum.app is available';avail.style.color='var(--ok)'}});
+
+  /* brand: live preview, presets and contrast check */
+  const themes={forest:'#1f3a34',ocean:'#1d4e89',graphite:'#2b2f36'},prev=document.getElementById('preview'),custom=document.getElementById('custom'),contrast=document.getElementById('contrast');
+  const hex2=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),toHex=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
+  const mix=(a,b,t)=>a.map((v,i)=>v*(1-t)+b[i]*t),lum=c=>{const [r,g,b]=c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*r+.7152*g+.0722*b};
+  const ratio=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+  function apply(hex){const c=hex2(hex),white=[255,255,255],dark=[22,21,19];
+    const onW=ratio(c,white),onD=ratio(c,dark),ink=onW>=onD?white:dark,best=Math.max(onW,onD);
+    const s=prev.style;s.setProperty('--p-accent',hex);s.setProperty('--p-hover',toHex(mix(c,[0,0,0],.14)));s.setProperty('--p-soft',toHex(mix(c,white,.87)));s.setProperty('--p-ink-on',toHex(ink));
+    const ok=best>=4.5;contrast.innerHTML='<span class="pill '+(ok?'ok':'warn')+'">'+(ok?'Readable':'Too light')+'</span> <span>'+best.toFixed(1)+' : 1 '+(ok?'· meets accessibility (AA)':'· needs 4.5 : 1, we will darken it')+'</span>';
+    document.getElementById('blogo').style.background=hex;document.getElementById('blogo').style.color=toHex(ink)}
+  document.querySelectorAll('.preset').forEach(p=>p.onclick=()=>{document.querySelectorAll('.preset').forEach(x=>x.setAttribute('aria-pressed',x===p));custom.value=themes[p.dataset.t];apply(themes[p.dataset.t])});
+  custom.addEventListener('input',()=>{document.querySelectorAll('.preset').forEach(x=>x.setAttribute('aria-pressed','false'));apply(custom.value)});
+  document.getElementById('bname').addEventListener('input',e=>{document.getElementById('pname').textContent=e.target.value||'Your Company';document.getElementById('pmark').textContent=(e.target.value.match(/\b\w/g)||['Q']).slice(0,2).join('').toUpperCase()});
+  apply('#1f3a34');
+</script>
+</body>
+</html>
