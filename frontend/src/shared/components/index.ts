@@ -6,3 +6,7 @@ export * from './PasswordField';
 export * from './PasswordRequirements';
 export * from './TextField';
 export * from './Icon';
+export * from './CountUp';
+export * from './DotWave';
+export * from './PointerEffects';
+export * from './WordReveal';

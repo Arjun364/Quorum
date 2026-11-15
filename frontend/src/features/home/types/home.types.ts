@@ -16,6 +16,8 @@ export interface SetupStep {
 /** One figure on the home page. */
 export interface StatTile {
   label: string;
-  value: string;
+  value: number;
+  /** Shown right after the number, for example /3. */
+  suffix?: string;
   note: string;
 }

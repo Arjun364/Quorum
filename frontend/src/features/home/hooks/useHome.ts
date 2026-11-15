@@ -28,9 +28,9 @@ export function useHome() {
   const finished = setupSteps.filter((step) => step.done).length;
   const stats: StatTile[] = isCompanyHead
     ? [
-        { label: 'Organizations', value: String(organizations.length), note: organizations.length === 1 ? 'unit in your company' : 'units in your company' },
-        { label: 'Departments', value: String(departmentCount), note: departmentCount === 1 ? 'ready for a head' : 'across all organizations' },
-        { label: 'Setup', value: `${finished}/${setupSteps.length}`, note: finished === setupSteps.length ? 'everything is in place' : 'steps done' },
+        { label: 'Organizations', value: organizations.length, note: organizations.length === 1 ? 'unit in your company' : 'units in your company' },
+        { label: 'Departments', value: departmentCount, note: departmentCount === 1 ? 'ready for a head' : 'across all organizations' },
+        { label: 'Setup', value: finished, suffix: `/${setupSteps.length}`, note: finished === setupSteps.length ? 'everything is in place' : 'steps done' },
       ]
     : [];
 

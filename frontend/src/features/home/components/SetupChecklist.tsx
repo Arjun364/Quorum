@@ -20,7 +20,7 @@ export function SetupChecklist({ steps }: SetupChecklistProps) {
           </p>
         </div>
         <div role="progressbar" aria-label="Setup progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-2">
-          <div className="h-full rounded-full bg-accent transition-[width] duration-700" style={{ width: `${percent}%` }} />
+          <div className="grow-x h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
         </div>
       </div>
       <ol className="divide-y divide-line border-t border-line">

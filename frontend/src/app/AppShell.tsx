@@ -1,6 +1,6 @@
 import { ROLE_LABELS, useSession, useSignOut } from '@/features/auth';
 import { BrandMark, useCompanyPublic } from '@/features/company';
-import { Icon, initialsOf } from '@/shared';
+import { DotWave, Icon, initialsOf } from '@/shared';
 import type { IconName, SystemRole } from '@/shared';
 import { NavLink, Outlet } from 'react-router-dom';
 
@@ -41,6 +41,9 @@ export function AppShell() {
 
   return (
     <div className="app-ground min-h-dvh lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 lg:left-[17rem]">
+        <DotWave spacing={34} intensity={0.8} className="[mask-image:radial-gradient(ellipse_80%_60%_at_60%_0%,#000_20%,transparent_80%)]" />
+      </div>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink"
@@ -100,7 +103,7 @@ export function AppShell() {
             </nav>
           )}
         </header>
-        <main id="main" className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-12">
+        <main id="main" className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-12">
           <Outlet />
         </main>
       </div>

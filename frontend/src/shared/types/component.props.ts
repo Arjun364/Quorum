@@ -58,3 +58,29 @@ export interface IconProps {
 export interface LogoProps {
   className?: string;
 }
+
+/** Props of the dot-grid canvas: dot spacing in px and a 0-1.5 strength for the wave and the pointer reaction. */
+export interface DotWaveProps {
+  spacing?: number;
+  intensity?: number;
+  className?: string;
+}
+
+/** Props of a number that rolls up to its value. */
+export interface CountUpProps {
+  value: number;
+  suffix?: string;
+  durationMs?: number;
+  className?: string;
+}
+
+/** Props of a headline whose words rise into place one after another. */
+export interface WordRevealProps {
+  text: string;
+  as?: 'h1' | 'h2' | 'p';
+  className?: string;
+  /** Start the rise when the element scrolls into view instead of on load. */
+  onView?: boolean;
+  /** Delay before the first word, in milliseconds. */
+  delayMs?: number;
+}

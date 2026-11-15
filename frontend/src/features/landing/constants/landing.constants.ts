@@ -1,8 +1,9 @@
-/** The three steps shown on the public website. */
-export const HOW_IT_WORKS = [
-  { title: 'Register your company', body: 'The company head signs up, confirms the email and gets a private address such as acme.quorum.app.' },
-  { title: 'Invite department heads', body: 'Add organizations and departments, then invite each head by email. They choose their own password.' },
-  { title: 'Run the meeting', body: 'The head starts it, a note-taker compiles the minutes, owners confirm their points and the head approves last.' },
+/** The slides of the "about the application" section, one per stage of a meeting. */
+export const SLIDES = [
+  { id: 'start', title: 'The head starts the meeting', body: 'Three members present, the head included, and Quorum draws a note-taker at random. Never the head, never last month’s note-taker.' },
+  { id: 'compile', title: 'The note-taker compiles the minutes', body: 'Points, owners and due dates in one list. The head adds notes; the note-taker decides what becomes official.' },
+  { id: 'confirm', title: 'Owners confirm their own points', body: 'Each person sees only what carries their name. A change asks only the affected owners to confirm again.' },
+  { id: 'approve', title: 'The head approves, the rest carries over', body: 'Open points move to next month by themselves. Every version stays on record.' },
 ] as const;
 
 /** Plain statements about how data is kept; claims here must stay true of the product. */

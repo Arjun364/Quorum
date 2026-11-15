@@ -147,6 +147,14 @@
   70%  { box-shadow: 0 0 0 6px transparent; opacity: 0.85; }
   100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
 }
+@keyframes word-up {
+  from { transform: translateY(110%); }
+  to { transform: translateY(0); }
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
 @keyframes orb-drift {
   to { transform: rotate(360deg); }
 }
@@ -224,6 +232,20 @@
   .pulse-dot { animation: pulse-dot 2.2s ease-out infinite; }
 
   /* Cards: one surface style for panels, tiles and rows (a faint top highlight gives the dark theme depth). */
+  .card:not(dialog) { position: relative; }
+  .card:not(dialog)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 260ms var(--ease-out);
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 15%, transparent), transparent 70%);
+  }
+  @media (hover: hover) {
+    .card:not(dialog):hover::after { opacity: 1; }
+  }
   .card {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -280,6 +302,49 @@
     filter: blur(22px);
     animation: orb-drift 42s linear infinite;
   }
+
+  /* Cursor ring: trails the mouse, swells over clickable things, presses in on click, steps aside over text fields. */
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+    will-change: transform;
+  }
+  .cursor-ring[data-visible="true"] { opacity: 1; }
+  .cursor-ring__shape {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border: 1.5px solid color-mix(in srgb, var(--accent) 80%, transparent);
+    border-radius: 9999px;
+    transition: width 260ms var(--ease-spring), height 260ms var(--ease-spring), margin 260ms var(--ease-spring),
+      background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), opacity 160ms, transform 160ms var(--ease-out);
+  }
+  .cursor-ring[data-state="hover"] .cursor-ring__shape {
+    width: 68px;
+    height: 68px;
+    margin: -34px 0 0 -34px;
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: var(--accent);
+  }
+  .cursor-ring[data-state="text"] .cursor-ring__shape { opacity: 0; }
+  .cursor-ring[data-pressed="true"] .cursor-ring__shape { transform: scale(0.72); }
+  .cursor-ring__label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+  /* Headline words rise out of a clip. */
+  .word-clip { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+  .word-rise { display: inline-block; transform: translateY(110%); }
+  .word-rise[data-run="true"] { animation: word-up 760ms var(--ease-out) both; }
+
+  /* Progress bars grow from the left when they appear. */
+  .grow-x { transform-origin: left; animation: grow-x 1100ms var(--ease-out) 300ms both; }
 
   /* Navigation items of the sidebar. */
   .nav-item { transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out); }
